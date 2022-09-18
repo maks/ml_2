@@ -1,0 +1,19 @@
+name: ml_2
+description: A sample command-line application.
+version: 1.0.0
+# homepage: https://www.example.com
+publish_to: none
+
+environment:
+  sdk: '>=2.18.0 <3.0.0'
+
+dependencies:
+  dart_fire_midi:
+    path: ../dart_fire_midi
+  dart_sunvox:
+    path: ../dart_sunvox
+  dart_midi: any    
+
+dev_dependencies:
+  lints: ^2.0.0
+  test: ^1.16.0
