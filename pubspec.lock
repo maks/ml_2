@@ -37,7 +37,7 @@ packages:
     source: hosted
     version: "2.1.0"
   collection:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: collection
       url: "https://pub.dartlang.org"
@@ -71,13 +71,6 @@ packages:
       relative: true
     source: path
     version: "0.1.0"
-  dart_midi:
-    dependency: "direct main"
-    description:
-      name: dart_midi
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.1"
   dart_sunvox:
     dependency: "direct main"
     description:
@@ -169,6 +162,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.0"
+  midi:
+    dependency: "direct main"
+    description:
+      name: midi
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.4"
   mime:
     dependency: transitive
     description:
@@ -211,6 +211,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.1"
+  quiver:
+    dependency: transitive
+    description:
+      name: quiver
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.1.0"
   shelf:
     dependency: transitive
     description:
@@ -309,6 +316,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.18"
+  tuple:
+    dependency: transitive
+    description:
+      name: tuple
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   typed_data:
     dependency: transitive
     description:
