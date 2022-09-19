@@ -11,7 +11,7 @@ class ML2 {
 
   Future<void> sunvoxInit() async {
     print("cwd: ${Directory.current}");
-    _sunvox = LibSunvox("./sunvox.so");
+    _sunvox = LibSunvox(0, "./sunvox.so");
     final v = _sunvox.versionString();
     print('sunvox lib version: $v');
 
@@ -21,6 +21,9 @@ class ML2 {
     // final data = File(filename).readAsBytesSync();
 
     _sunvox.volume = 256;
+
+    print("project name: ${_sunvox.projectName}");
+    print("modules: ${_sunvox.moduleCount}");
   }
 
   void play() => _sunvox.play();
@@ -34,6 +37,7 @@ class ML2 {
       exit(1);
     }
 
+    // find first Akai Fire controller
     final midiDev = midiDevices.firstWhereOrNull((dev) => dev.name.contains('FL STUDIO'));
 
     if (midiDev == null) {
@@ -58,6 +62,7 @@ class ML2 {
   }
 
   void _handleInput(FireInputEvent event) {
+    //print("event: ${event.runtimeType}");
     if (event is ButtonEvent) {
       //print("button: $event");
       if (event.dir == ButtonDirection.Down) {
@@ -67,7 +72,16 @@ class ML2 {
         } else if (event.type == ButtonType.Stop) {
           print("Stop!");
           stop();
-        }
+        } 
+      }
+    }
+    if (event is PadEvent) {
+      if (event.dir == ButtonDirection.Down) {
+        final note = 10 + (event.row * 8) + event.column;
+        print("note:$note");
+        final moduleId = _sunvox.findModuleByName("Kicker");
+        const track = 0;
+        _sunvox.sendEvent(0, moduleId, note, 127);
       }
     }
   }
