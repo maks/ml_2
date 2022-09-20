@@ -6,8 +6,12 @@ import 'package:midi/midi.dart';
 import 'package:collection/collection.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart' as fire;
 
+enum GlobalMode { step, note, drum, perform }
+
 class ML2 {
   late final LibSunvox _sunvox;
+  late final AlsaMidiDevice? _midiDevice;
+  GlobalMode _globalMode = GlobalMode.step;
 
   Future<void> sunvoxInit() async {
     print("cwd: ${Directory.current}");
@@ -15,7 +19,8 @@ class ML2 {
     final v = _sunvox.versionString();
     print('sunvox lib version: $v');
 
-    const filename = "song01.sunvox";
+    // const filename = "song01.sunvox";
+    const filename = "default1.sunvox";
     await _sunvox.load(filename);
     // or as data using Dart's file ops
     // final data = File(filename).readAsBytesSync();
@@ -23,7 +28,14 @@ class ML2 {
     _sunvox.volume = 256;
 
     print("project name: ${_sunvox.projectName}");
-    print("modules: ${_sunvox.moduleCount}");
+    print("modules: ${_sunvox.moduleSlotsCount}");
+    // for (var i = 0; i < _sunvox.moduleSlotsCount; i++) {
+    //   final module = _sunvox.getModule(i);
+    //   if (module == null) {
+    //     continue;
+    //   }
+    //   print("[$i] ${module.name} [${module.color}] inputs: ${module.inputs} outputs: ${module.outputs}");
+    // }
   }
 
   void play() => _sunvox.play();
@@ -39,6 +51,7 @@ class ML2 {
 
     // find first Akai Fire controller
     final midiDev = midiDevices.firstWhereOrNull((dev) => dev.name.contains('FL STUDIO'));
+    _midiDevice = midiDev;
 
     if (midiDev == null) {
       print('missing Akai Fire device');
@@ -59,6 +72,21 @@ class ML2 {
       //print('input event: $event');
       _handleInput(FireInputEvent.fromMidi(event.data));
     });
+
+    showModulesOnPads(midiDev);
+  }
+
+  void showModulesOnPads(AlsaMidiDevice midiDevice) {
+    for (var i = 0; i < _sunvox.moduleSlotsCount; i++) {
+      final module = _sunvox.getModule(i);
+      if (module == null) {
+        continue;
+      }
+      print("[$i] ${module.name} [${module.color}] inputs: ${module.inputs} outputs: ${module.outputs}");
+      final int row = i ~/ 16;
+      final int col = i % 16;
+      midiDevice.send(fire.colorPad(row, col, fromSVColor(module.color)));
+    }
   }
 
   void _handleInput(FireInputEvent event) {
@@ -66,13 +94,88 @@ class ML2 {
     if (event is ButtonEvent) {
       //print("button: $event");
       if (event.dir == ButtonDirection.Down) {
-        if (event.type == ButtonType.Play) {
-          print("PLay!");
-          play();
-        } else if (event.type == ButtonType.Stop) {
-          print("Stop!");
-          stop();
-        } 
+        switch (event.type) {
+          case ButtonType.Play:
+            print("PLay!");
+            play();
+            break;
+          case ButtonType.Stop:
+            print("Stop!");
+            stop();
+            break;
+          case ButtonType.PatternUp:
+            // TODO: Handle this case.
+            break;
+          case ButtonType.PatterDown:
+            // TODO: Handle this case.
+            break;
+          case ButtonType.Browser:
+            // TODO: Handle this case.
+            break;
+          case ButtonType.GridLeft:
+            // TODO: Handle this case.
+            break;
+          case ButtonType.GridRight:
+            // TODO: Handle this case.
+            break;
+          case ButtonType.BankSelect:
+            // TODO: Handle this case.
+            break;
+          case ButtonType.MuteButton1:
+            // TODO: Handle this case.
+            break;
+          case ButtonType.MuteButton2:
+            // TODO: Handle this case.
+            break;
+          case ButtonType.MuteButton3:
+            // TODO: Handle this case.
+            break;
+          case ButtonType.MuteButton4:
+            // TODO: Handle this case.
+            break;
+          case ButtonType.Step:
+            _globalMode = GlobalMode.step;
+            break;
+          case ButtonType.Note:
+            _globalMode = GlobalMode.note;
+            break;
+          case ButtonType.Drum:
+            _globalMode = GlobalMode.drum;
+            break;
+          case ButtonType.Perform:
+            _globalMode = GlobalMode.perform;
+            break;
+          case ButtonType.Shift:
+            // TODO: Handle this case.
+            break;
+          case ButtonType.Alt:
+            // TODO: Handle this case.
+            break;
+          case ButtonType.Pattern:
+            // TODO: Handle this case.
+            break;
+          case ButtonType.Record:
+            // TODO: Handle this case.
+            break;
+          case ButtonType.Volume:
+            // TODO: Handle this case.
+            break;
+          case ButtonType.Pan:
+            // TODO: Handle this case.
+            break;
+          case ButtonType.Filter:
+            // TODO: Handle this case.
+            break;
+          case ButtonType.Resonance:
+            // TODO: Handle this case.
+            break;
+          case ButtonType.Select:
+            // TODO: Handle this case.
+            break;
+          case ButtonType.Pad:
+            // TODO: Handle this case.
+            break;
+        }
       }
     }
     if (event is PadEvent) {
@@ -80,9 +183,38 @@ class ML2 {
         final note = 10 + (event.row * 8) + event.column;
         print("note:$note");
         final moduleId = _sunvox.findModuleByName("Kicker");
-        const track = 0;
-        _sunvox.sendEvent(0, moduleId, note, 127);
+        const track = 1;
+        _sunvox.sendEvent(track, moduleId, note, 127);
       }
     }
+    //TODO: need to call on timer, but for now just call only after events
+    _updateUI();
+  }
+
+  void _updateUI() {
+    switch (_globalMode) {
+      case GlobalMode.step:
+        // TODO: Handle this case.
+        break;
+      case GlobalMode.note:
+        // TODO: Handle this case.
+        break;
+      case GlobalMode.drum:
+        // TODO: Handle this case.
+        break;
+      case GlobalMode.perform:
+        // TODO: Handle this case.
+        break;
+    }
+  }
+
+  void shutdown() {
+    print("ml 2 shutting down");
+    _midiDevice?.disconnect();
+    print("midi device disconnected");
   }
 }
+
+const padDimRatio = 3;
+const divisor = (2 * padDimRatio);
+PadColor fromSVColor(SVColor c) => fire.PadColor(c.r ~/ divisor, c.g ~/ divisor, c.b ~/ divisor);
