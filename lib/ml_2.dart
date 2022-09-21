@@ -73,10 +73,12 @@ class ML2 {
       _handleInput(FireInputEvent.fromMidi(event.data));
     });
 
-    showModulesOnPads(midiDev);
+    _showModulesOnPads(midiDev);
+
+    _updateUI();
   }
 
-  void showModulesOnPads(AlsaMidiDevice midiDevice) {
+  void _showModulesOnPads(AlsaMidiDevice midiDevice) {
     for (var i = 0; i < _sunvox.moduleSlotsCount; i++) {
       final module = _sunvox.getModule(i);
       if (module == null) {
@@ -192,18 +194,21 @@ class ML2 {
   }
 
   void _updateUI() {
+    for (final b in [ButtonCode.step, ButtonCode.note, ButtonCode.drum, ButtonCode.perform]) {
+      _midiDevice?.send(ButtonControls.buttonOn(b, 0));
+    }
     switch (_globalMode) {
       case GlobalMode.step:
-        // TODO: Handle this case.
+        _midiDevice?.send(ButtonControls.buttonOn(ButtonCode.step, 1));
         break;
       case GlobalMode.note:
-        // TODO: Handle this case.
+        _midiDevice?.send(ButtonControls.buttonOn(ButtonCode.note, 1));
         break;
       case GlobalMode.drum:
-        // TODO: Handle this case.
+        _midiDevice?.send(ButtonControls.buttonOn(ButtonCode.drum, 1));
         break;
       case GlobalMode.perform:
-        // TODO: Handle this case.
+        _midiDevice?.send(ButtonControls.buttonOn(ButtonCode.perform, 1));
         break;
     }
   }
