@@ -5,13 +5,15 @@ import 'package:dart_sunvox/dart_sunvox.dart';
 import 'package:midi/midi.dart';
 import 'package:collection/collection.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart' as fire;
+import 'package:ml_2/transport_controls.dart';
 
 enum GlobalMode { step, note, drum, perform }
 
 class ML2 {
   late final LibSunvox _sunvox;
-  late final AlsaMidiDevice? _midiDevice;
+  late final AlsaMidiDevice _midiDevice;
   GlobalMode _globalMode = GlobalMode.step;
+  late final TransportControls _transportControls;
 
   Future<void> sunvoxInit() async {
     print("cwd: ${Directory.current}");
@@ -19,8 +21,8 @@ class ML2 {
     final v = _sunvox.versionString();
     print('sunvox lib version: $v');
 
-    // const filename = "song01.sunvox";
-    const filename = "default1.sunvox";
+    const filename = "song01.sunvox";
+    // const filename = "default1.sunvox";
     await _sunvox.load(filename);
     // or as data using Dart's file ops
     // final data = File(filename).readAsBytesSync();
@@ -29,18 +31,25 @@ class ML2 {
 
     print("project name: ${_sunvox.projectName}");
     print("modules: ${_sunvox.moduleSlotsCount}");
-    // for (var i = 0; i < _sunvox.moduleSlotsCount; i++) {
-    //   final module = _sunvox.getModule(i);
-    //   if (module == null) {
-    //     continue;
-    //   }
-    //   print("[$i] ${module.name} [${module.color}] inputs: ${module.inputs} outputs: ${module.outputs}");
-    // }
   }
 
-  void play() => _sunvox.play();
+  void play() {
+    print("PLay!");
+    _sunvox.play();
+    _transportControls.play();
+  }
 
-  void stop() => _sunvox.stop();
+  void record() {
+    print("Record!");
+    // _sunvox.record();
+    _transportControls.record();
+  }
+
+  void stop() {
+    print("Stop!");
+    _sunvox.stop();
+    _transportControls.stop();
+  }
 
   Future<void> fireInit() async {
     final midiDevices = AlsaMidiDevice.getDevices();
@@ -51,16 +60,17 @@ class ML2 {
 
     // find first Akai Fire controller
     final midiDev = midiDevices.firstWhereOrNull((dev) => dev.name.contains('FL STUDIO'));
+    if (midiDev == null) {
+      throw Exception('missing Akai Fire device');
+    }
     _midiDevice = midiDev;
 
-    if (midiDev == null) {
-      print('missing Akai Fire device');
-      return;
-    }
     if (!(await midiDev.connect())) {
       print('failed to connect to Akai Fire device');
       return;
     }
+
+    _transportControls = TransportControls();
 
     midiDev.send(fire.allOffMessage);
     print('init: all off');
@@ -98,11 +108,9 @@ class ML2 {
       if (event.dir == ButtonDirection.Down) {
         switch (event.type) {
           case ButtonType.Play:
-            print("PLay!");
             play();
             break;
           case ButtonType.Stop:
-            print("Stop!");
             stop();
             break;
           case ButtonType.PatternUp:
@@ -157,7 +165,7 @@ class ML2 {
             // TODO: Handle this case.
             break;
           case ButtonType.Record:
-            // TODO: Handle this case.
+            record();
             break;
           case ButtonType.Volume:
             // TODO: Handle this case.
@@ -195,27 +203,28 @@ class ML2 {
 
   void _updateUI() {
     for (final b in [ButtonCode.step, ButtonCode.note, ButtonCode.drum, ButtonCode.perform]) {
-      _midiDevice?.send(ButtonControls.buttonOn(b, 0));
+      _midiDevice.send(ButtonControls.buttonOn(b, 0));
     }
     switch (_globalMode) {
       case GlobalMode.step:
-        _midiDevice?.send(ButtonControls.buttonOn(ButtonCode.step, 1));
+        _midiDevice.send(ButtonControls.buttonOn(ButtonCode.step, 1));
         break;
       case GlobalMode.note:
-        _midiDevice?.send(ButtonControls.buttonOn(ButtonCode.note, 1));
+        _midiDevice.send(ButtonControls.buttonOn(ButtonCode.note, 1));
         break;
       case GlobalMode.drum:
-        _midiDevice?.send(ButtonControls.buttonOn(ButtonCode.drum, 1));
+        _midiDevice.send(ButtonControls.buttonOn(ButtonCode.drum, 1));
         break;
       case GlobalMode.perform:
-        _midiDevice?.send(ButtonControls.buttonOn(ButtonCode.perform, 1));
+        _midiDevice.send(ButtonControls.buttonOn(ButtonCode.perform, 1));
         break;
     }
+    _transportControls.update(_midiDevice);
   }
 
   void shutdown() {
     print("ml 2 shutting down");
-    _midiDevice?.disconnect();
+    _midiDevice.disconnect();
     print("midi device disconnected");
   }
 }
