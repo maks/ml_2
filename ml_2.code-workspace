@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../dart_fire_midi"
+		},
+		{
+			"path": "../dart_sunvox"
 		}
 	],
 	"settings": {}

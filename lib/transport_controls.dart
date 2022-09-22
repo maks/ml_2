@@ -30,7 +30,7 @@ class TransportControls {
         midiDevice.send(ButtonControls.buttonOn(ButtonCode.play, ButtonLedColor.color3.index));
         break;
       case TransportState.paused:
-        // TODO: Handle this case.
+        midiDevice.send(ButtonControls.buttonOn(ButtonCode.play, ButtonLedColor.color1.index));
         break;
       case TransportState.stopped:
         midiDevice.send(ButtonControls.buttonOn(ButtonCode.stop, ButtonLedColor.color1.index));

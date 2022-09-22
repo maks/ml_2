@@ -33,22 +33,30 @@ class ML2 {
     print("modules: ${_sunvox.moduleSlotsCount}");
   }
 
-  void play() {
-    print("PLay!");
-    _sunvox.play();
-    _transportControls.play();
-  }
-
-  void record() {
-    print("Record!");
-    // _sunvox.record();
-    _transportControls.record();
+  void playPause() {
+    print("Play-Pause!");
+    if (_transportControls.state == TransportState.playing) {
+      _sunvox.pause();
+      _transportControls.pause();
+    } else if (_transportControls.state == TransportState.paused) {
+      _sunvox.resume();
+      _transportControls.play();
+    } else {
+      _sunvox.playFromStart();
+      _transportControls.play();
+    }   
   }
 
   void stop() {
     print("Stop!");
     _sunvox.stop();
     _transportControls.stop();
+  }
+
+  void record() {
+    print("Record!");
+    // _sunvox.record();
+    _transportControls.record();
   }
 
   Future<void> fireInit() async {
@@ -108,7 +116,7 @@ class ML2 {
       if (event.dir == ButtonDirection.Down) {
         switch (event.type) {
           case ButtonType.Play:
-            play();
+            playPause();
             break;
           case ButtonType.Stop:
             stop();
