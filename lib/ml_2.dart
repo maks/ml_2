@@ -5,15 +5,20 @@ import 'package:dart_sunvox/dart_sunvox.dart';
 import 'package:midi/midi.dart';
 import 'package:collection/collection.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart' as fire;
+import 'package:ml_2/modes.dart';
+import 'package:ml_2/providers.dart';
 import 'package:ml_2/transport_controls.dart';
+import 'package:riverpod/riverpod.dart';
 
-enum GlobalMode { step, note, drum, perform }
 
 class ML2 {
   late final LibSunvox _sunvox;
   late final AlsaMidiDevice _midiDevice;
-  GlobalMode _globalMode = GlobalMode.step;
+  DeviceMode _globalMode = StepMode();
   late final TransportControls _transportControls;
+  final ProviderContainer _container;
+
+  ML2(this._container);
 
   Future<void> sunvoxInit() async {
     print("cwd: ${Directory.current}");
@@ -152,16 +157,16 @@ class ML2 {
             // TODO: Handle this case.
             break;
           case ButtonType.Step:
-            _globalMode = GlobalMode.step;
+            _globalMode = _container.read(stepModeProvider);
             break;
           case ButtonType.Note:
-            _globalMode = GlobalMode.note;
+            _globalMode = _container.read(noteModeProvider);
             break;
           case ButtonType.Drum:
-            _globalMode = GlobalMode.drum;
+            _globalMode = _container.read(moduleModeProvider);
             break;
           case ButtonType.Perform:
-            _globalMode = GlobalMode.perform;
+            _globalMode = _container.read(perfomModeProvider);
             break;
           case ButtonType.Shift:
             // TODO: Handle this case.
@@ -213,17 +218,17 @@ class ML2 {
     for (final b in [ButtonCode.step, ButtonCode.note, ButtonCode.drum, ButtonCode.perform]) {
       _midiDevice.send(ButtonControls.buttonOn(b, 0));
     }
-    switch (_globalMode) {
-      case GlobalMode.step:
+    switch (_globalMode.runtimeType) {
+      case StepMode:
         _midiDevice.send(ButtonControls.buttonOn(ButtonCode.step, 1));
         break;
-      case GlobalMode.note:
+      case NoteMode:
         _midiDevice.send(ButtonControls.buttonOn(ButtonCode.note, 1));
         break;
-      case GlobalMode.drum:
+      case ModuleMode:
         _midiDevice.send(ButtonControls.buttonOn(ButtonCode.drum, 1));
         break;
-      case GlobalMode.perform:
+      case PerformMode:
         _midiDevice.send(ButtonControls.buttonOn(ButtonCode.perform, 1));
         break;
     }

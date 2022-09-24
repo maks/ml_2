@@ -1,9 +1,12 @@
 import 'dart:io';
 
 import 'package:ml_2/ml_2.dart';
+import 'package:riverpod/riverpod.dart';
 
 void main(List<String> arguments) async {
-  final ml2 = ML2();
+  final container = ProviderContainer();
+
+  final ml2 = ML2(container);
   await ml2.sunvoxInit();
   await ml2.fireInit();
 
