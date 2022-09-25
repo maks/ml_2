@@ -11,11 +11,15 @@ import 'package:ml_2/providers.dart';
 import 'package:ml_2/transport_controls.dart';
 import 'package:riverpod/riverpod.dart';
 
+import 'modifiers.dart';
+
+
 
 class ML2 {
   late final LibSunvox _sunvox;
   late final AlsaMidiDevice _midiDevice;
-  DeviceMode _globalMode = StepMode();
+  DeviceMode _currentMode = StepMode();
+  Modifiers _modifiers = Modifiers.allOff();
   late final TransportControls _transportControls;
   final ProviderContainer _container;
 
@@ -92,6 +96,7 @@ class ML2 {
     // uncomment to light up top left grid button blue
     midiDev.send(fire.colorPad(0, 0, fire.PadColor(10, 10, 70)));
 
+    // listen for all incoming midi messages from the Fire
     midiDev.receivedMessages.listen((event) {
       // log('input event: $event');
       _handleInput(FireInputEvent.fromMidi(event.data));
@@ -116,9 +121,9 @@ class ML2 {
   }
 
   void _handleInput(FireInputEvent event) {
-    log("handleInput event: ${event.runtimeType}");
+    log("handleInput event: $event");
     if (event is ButtonEvent) {
-      if (event.dir == ButtonDirection.Down) {
+      if (event.direction == ButtonDirection.Down) {
         switch (event.type) {
           case ButtonType.Play:
             playPause();
@@ -157,22 +162,24 @@ class ML2 {
             // TODO: Handle this case.
             break;
           case ButtonType.Step:
-            _globalMode = _container.read(stepModeProvider);
+            _currentMode = _container.read(stepModeProvider);
             break;
           case ButtonType.Note:
-            _globalMode = _container.read(noteModeProvider);
+            _currentMode = _container.read(noteModeProvider);
             break;
           case ButtonType.Drum:
-            _globalMode = _container.read(moduleModeProvider);
+            _currentMode = _container.read(moduleModeProvider);
             break;
           case ButtonType.Perform:
-            _globalMode = _container.read(perfomModeProvider);
+            _currentMode = _container.read(perfomModeProvider);
             break;
           case ButtonType.Shift:
-            // TODO: Handle this case.
+            _modifiers = _modifiers.copyWith(shift: false);
+            _midiDevice.send(ButtonControls.buttonOn(ButtonCode.shift, 1));
             break;
           case ButtonType.Alt:
-            // TODO: Handle this case.
+            _modifiers = _modifiers.copyWith(alt: true);
+            _midiDevice.send(ButtonControls.buttonOn(ButtonCode.alt, 1));
             break;
           case ButtonType.Pattern:
             // TODO: Handle this case.
@@ -199,10 +206,23 @@ class ML2 {
             // TODO: Handle this case.
             break;
         }
+      } else {
+        switch (event.type) {
+          case ButtonType.Shift:
+            _modifiers = _modifiers.copyWith(shift: false);
+            _midiDevice.send(ButtonControls.buttonOff(ButtonCode.shift));
+            break;
+          case ButtonType.Alt:
+            _modifiers = _modifiers.copyWith(alt: false);
+            _midiDevice.send(ButtonControls.buttonOff(ButtonCode.alt));
+            break;
+          default: //NA
+            break;
+        }
       }
     }
     if (event is PadEvent) {
-      if (event.dir == ButtonDirection.Down) {
+      if (event.direction == ButtonDirection.Down) {
         final note = 10 + (event.row * 8) + event.column;
         log("note:$note");
         final moduleId = _sunvox.findModuleByName("Kicker");
@@ -211,7 +231,7 @@ class ML2 {
       }
     }
     if (event is DialEvent) {
-      log("dial: ${event.type} [${event.dir}] ${event.velocity}");
+      log("dial: ${event.type} [${event.direction}] ${event.velocity}");
     }
     //TODO: need to call on timer, but for now just call only after events
     _updateUI();
@@ -221,7 +241,7 @@ class ML2 {
     for (final b in [ButtonCode.step, ButtonCode.note, ButtonCode.drum, ButtonCode.perform]) {
       _midiDevice.send(ButtonControls.buttonOn(b, 0));
     }
-    switch (_globalMode.runtimeType) {
+    switch (_currentMode.runtimeType) {
       case StepMode:
         _midiDevice.send(ButtonControls.buttonOn(ButtonCode.step, 1));
         break;

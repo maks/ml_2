@@ -1,24 +1,28 @@
+import 'package:dart_fire_midi/dart_fire_midi.dart';
+
+import 'modifiers.dart';
+
 abstract class DeviceMode {
-  void onButton();
-  void onPad();
-  void onDial();
+  void onButton(ButtonEvent event, Modifiers mods);
+  void onPad(PadEvent event, Modifiers mods);
+  void onDial(DialEvent event, Modifiers mods);
 
   void onUpdate();
 }
 
 class StepMode implements DeviceMode {
   @override
-  void onButton() {
+  void onButton(ButtonEvent event, Modifiers mods) {
     // TODO: implement onButton
   }
 
   @override
-  void onDial() {
+  void onDial(DialEvent event, Modifiers mods) {
     // TODO: implement onDial
   }
 
   @override
-  void onPad() {
+  void onPad(PadEvent event, Modifiers mods) {
     // TODO: implement onPad
   }
 
@@ -30,17 +34,17 @@ class StepMode implements DeviceMode {
 
 class NoteMode implements DeviceMode {
   @override
-  void onButton() {
+  void onButton(ButtonEvent event, Modifiers mods) {
     // TODO: implement onButton
   }
 
   @override
-  void onDial() {
+  void onDial(DialEvent event, Modifiers mods) {
     // TODO: implement onDial
   }
 
   @override
-  void onPad() {
+  void onPad(PadEvent event, Modifiers mods) {
     // TODO: implement onPad
   }
 
@@ -53,17 +57,17 @@ class NoteMode implements DeviceMode {
 /// uses the "drum mdoe" button
 class ModuleMode implements DeviceMode {
   @override
-  void onButton() {
+  void onButton(ButtonEvent event, Modifiers mods) {
     // TODO: implement onButton
   }
 
   @override
-  void onDial() {
+  void onDial(DialEvent event, Modifiers mods) {
     // TODO: implement onDial
   }
 
   @override
-  void onPad() {
+  void onPad(PadEvent event, Modifiers mods) {
     // TODO: implement onPad
   }
 
@@ -75,17 +79,17 @@ class ModuleMode implements DeviceMode {
 
 class PerformMode implements DeviceMode {
   @override
-  void onButton() {
+  void onButton(ButtonEvent event, Modifiers mods) {
     // TODO: implement onButton
   }
 
   @override
-  void onDial() {
+  void onDial(DialEvent event, Modifiers mods) {
     // TODO: implement onDial
   }
 
   @override
-  void onPad() {
+  void onPad(PadEvent event, Modifiers mods) {
     // TODO: implement onPad
   }
 
