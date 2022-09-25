@@ -8,6 +8,7 @@ environment:
   sdk: '>=2.18.0 <3.0.0'
 
 dependencies:
+  bonsai: ^1.0.1
   collection: ^1.16.0
   dart_fire_midi:
     path: ../dart_fire_midi

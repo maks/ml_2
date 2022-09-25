@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bonsai/bonsai.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart';
 import 'package:dart_sunvox/dart_sunvox.dart';
 import 'package:midi/midi.dart';
@@ -21,10 +22,10 @@ class ML2 {
   ML2(this._container);
 
   Future<void> sunvoxInit() async {
-    print("cwd: ${Directory.current}");
+    log("cwd: ${Directory.current}");
     _sunvox = LibSunvox(0, "./sunvox.so");
     final v = _sunvox.versionString();
-    print('sunvox lib version: $v');
+    log('sunvox lib version: $v');
 
     const filename = "song01.sunvox";
     // const filename = "default1.sunvox";
@@ -34,12 +35,12 @@ class ML2 {
 
     _sunvox.volume = 256;
 
-    print("project name: ${_sunvox.projectName}");
-    print("modules: ${_sunvox.moduleSlotsCount}");
+    log("project name: ${_sunvox.projectName}");
+    log("modules: ${_sunvox.moduleSlotsCount}");
   }
 
   void playPause() {
-    print("Play-Pause!");
+    log("Play-Pause!");
     if (_transportControls.state == TransportState.playing) {
       _sunvox.pause();
       _transportControls.pause();
@@ -53,13 +54,13 @@ class ML2 {
   }
 
   void stop() {
-    print("Stop!");
+    log("Stop!");
     _sunvox.stop();
     _transportControls.stop();
   }
 
   void record() {
-    print("Record!");
+    log("Record!");
     // _sunvox.record();
     _transportControls.record();
   }
@@ -67,7 +68,7 @@ class ML2 {
   Future<void> fireInit() async {
     final midiDevices = AlsaMidiDevice.getDevices();
     if (midiDevices.isEmpty) {
-      print('missing akai fire controller');
+      log('missing akai fire controller');
       exit(1);
     }
 
@@ -79,20 +80,20 @@ class ML2 {
     _midiDevice = midiDev;
 
     if (!(await midiDev.connect())) {
-      print('failed to connect to Akai Fire device');
+      log('failed to connect to Akai Fire device');
       return;
     }
 
     _transportControls = TransportControls();
 
     midiDev.send(fire.allOffMessage);
-    print('init: all off');
+    log('init: all off');
 
     // uncomment to light up top left grid button blue
     midiDev.send(fire.colorPad(0, 0, fire.PadColor(10, 10, 70)));
 
     midiDev.receivedMessages.listen((event) {
-      //print('input event: $event');
+      // log('input event: $event');
       _handleInput(FireInputEvent.fromMidi(event.data));
     });
 
@@ -107,7 +108,7 @@ class ML2 {
       if (module == null) {
         continue;
       }
-      print("[$i] ${module.name} [${module.color}] inputs: ${module.inputs} outputs: ${module.outputs}");
+      log("[$i] ${module.name} [${module.color}] inputs: ${module.inputs} outputs: ${module.outputs}");
       final int row = i ~/ 16;
       final int col = i % 16;
       midiDevice.send(fire.colorPad(row, col, fromSVColor(module.color)));
@@ -115,9 +116,8 @@ class ML2 {
   }
 
   void _handleInput(FireInputEvent event) {
-    //print("event: ${event.runtimeType}");
+    log("handleInput event: ${event.runtimeType}");
     if (event is ButtonEvent) {
-      //print("button: $event");
       if (event.dir == ButtonDirection.Down) {
         switch (event.type) {
           case ButtonType.Play:
@@ -204,11 +204,14 @@ class ML2 {
     if (event is PadEvent) {
       if (event.dir == ButtonDirection.Down) {
         final note = 10 + (event.row * 8) + event.column;
-        print("note:$note");
+        log("note:$note");
         final moduleId = _sunvox.findModuleByName("Kicker");
         const track = 1;
         _sunvox.sendEvent(track, moduleId, note, 127);
       }
+    }
+    if (event is DialEvent) {
+      log("dial: ${event.type} [${event.dir}] ${event.velocity}");
     }
     //TODO: need to call on timer, but for now just call only after events
     _updateUI();
@@ -236,9 +239,9 @@ class ML2 {
   }
 
   void shutdown() {
-    print("ml 2 shutting down");
+    log("ml 2 shutting down");
     _midiDevice.disconnect();
-    print("midi device disconnected");
+    log("midi device disconnected");
   }
 }
 
