@@ -7,41 +7,25 @@ import 'package:midi/midi.dart';
 import 'package:collection/collection.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart' as fire;
 import 'package:ml_2/modes.dart';
-import 'package:ml_2/providers.dart';
 import 'package:ml_2/transport_controls.dart';
 import 'package:riverpod/riverpod.dart';
 
 import 'modifiers.dart';
 
-
-
 class ML2 {
   late final LibSunvox _sunvox;
   late final AlsaMidiDevice _midiDevice;
-  DeviceMode _currentMode = StepMode();
+  int _currentModeIndex = 0;
+  List<DeviceMode> modes = [];
+
+  DeviceMode get currentMode => modes[_currentModeIndex];
+  
   Modifiers _modifiers = Modifiers.allOff();
   late final TransportControls _transportControls;
+  // ignore: unused_field
   final ProviderContainer _container;
 
-  ML2(this._container);
-
-  Future<void> sunvoxInit() async {
-    log("cwd: ${Directory.current}");
-    _sunvox = LibSunvox(0, "./sunvox.so");
-    final v = _sunvox.versionString();
-    log('sunvox lib version: $v');
-
-    const filename = "song01.sunvox";
-    // const filename = "default1.sunvox";
-    await _sunvox.load(filename);
-    // or as data using Dart's file ops
-    // final data = File(filename).readAsBytesSync();
-
-    _sunvox.volume = 256;
-
-    log("project name: ${_sunvox.projectName}");
-    log("modules: ${_sunvox.moduleSlotsCount}");
-  }
+  ML2(this._container, this._sunvox, this.modes);
 
   void playPause() {
     log("Play-Pause!");
@@ -80,12 +64,14 @@ class ML2 {
     final midiDev = midiDevices.firstWhereOrNull((dev) => dev.name.contains('FL STUDIO'));
     if (midiDev == null) {
       throw Exception('missing Akai Fire device');
-    }
+    } 
     _midiDevice = midiDev;
 
     if (!(await midiDev.connect())) {
       log('failed to connect to Akai Fire device');
       return;
+    } else {
+      print("Connected to Akai Fire device !");
     }
 
     _transportControls = TransportControls();
@@ -102,23 +88,11 @@ class ML2 {
       _handleInput(FireInputEvent.fromMidi(event.data));
     });
 
-    _showModulesOnPads(midiDev);
-
+    // initial state update
+    log('init: update ui');
     _updateUI();
   }
 
-  void _showModulesOnPads(AlsaMidiDevice midiDevice) {
-    for (var i = 0; i < _sunvox.moduleSlotsCount; i++) {
-      final module = _sunvox.getModule(i);
-      if (module == null) {
-        continue;
-      }
-      log("[$i] ${module.name} [${module.color}] inputs: ${module.inputs} outputs: ${module.outputs}");
-      final int row = i ~/ 16;
-      final int col = i % 16;
-      midiDevice.send(fire.colorPad(row, col, fromSVColor(module.color)));
-    }
-  }
 
   void _handleInput(FireInputEvent event) {
     log("handleInput event: $event");
@@ -162,16 +136,16 @@ class ML2 {
             // TODO: Handle this case.
             break;
           case ButtonType.Step:
-            _currentMode = _container.read(stepModeProvider);
+            _currentModeIndex = 0;
             break;
           case ButtonType.Note:
-            _currentMode = _container.read(noteModeProvider);
+            _currentModeIndex = 1;
             break;
           case ButtonType.Drum:
-            _currentMode = _container.read(moduleModeProvider);
+            _currentModeIndex = 2;
             break;
           case ButtonType.Perform:
-            _currentMode = _container.read(perfomModeProvider);
+            _currentModeIndex = 3;
             break;
           case ButtonType.Shift:
             _modifiers = _modifiers.copyWith(shift: false);
@@ -241,7 +215,8 @@ class ML2 {
     for (final b in [ButtonCode.step, ButtonCode.note, ButtonCode.drum, ButtonCode.perform]) {
       _midiDevice.send(ButtonControls.buttonOn(b, 0));
     }
-    switch (_currentMode.runtimeType) {
+    log("update ui: $currentMode");
+    switch (currentMode.runtimeType) {
       case StepMode:
         _midiDevice.send(ButtonControls.buttonOn(ButtonCode.step, 1));
         break;
@@ -256,6 +231,7 @@ class ML2 {
         break;
     }
     _transportControls.update(_midiDevice);
+    currentMode.onUpdate(_midiDevice);
   }
 
   void shutdown() {
@@ -265,6 +241,3 @@ class ML2 {
   }
 }
 
-const padDimRatio = 3;
-const divisor = (2 * padDimRatio);
-PadColor fromSVColor(SVColor c) => fire.PadColor(c.r ~/ divisor, c.g ~/ divisor, c.b ~/ divisor);
