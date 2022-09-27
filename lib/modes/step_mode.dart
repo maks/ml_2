@@ -23,6 +23,11 @@ class StepMode implements DeviceMode {
 
   @override
   void onUpdate(AlsaMidiDevice midiDev) {
+    
+  }
+
+  @override
+  void onFocus(AlsaMidiDevice midiDev) {
     log("step clear all pads");
     midiDev.send(allPadOff);
   }

@@ -144,15 +144,19 @@ class ML2 {
             break;
           case ButtonType.Step:
             _currentModeIndex = 0;
+            currentMode.onFocus(_midiDevice);
             break;
           case ButtonType.Note:
             _currentModeIndex = 1;
+            currentMode.onFocus(_midiDevice);
             break;
           case ButtonType.Drum:
             _currentModeIndex = 2;
+            currentMode.onFocus(_midiDevice);
             break;
           case ButtonType.Perform:
             _currentModeIndex = 3;
+            currentMode.onFocus(_midiDevice);
             break;
           case ButtonType.Shift:
             _modifiers = _modifiers.copyWith(shift: false);
@@ -202,14 +206,7 @@ class ML2 {
         }
       }
     }
-    if (event is PadEvent) {
-      if (event.direction == ButtonDirection.Down) {
-        final note = 10 + (event.row * 8) + event.column;
-        log("note:$note");
-        final moduleId = _sunvox.findModuleByName("Kicker");
-        const track = 1;
-        _sunvox.sendEvent(track, moduleId, note, 127);
-      }
+    if (event is PadEvent) {      
       currentMode.onPad(event, _modifiers);
     }
     if (event is DialEvent) {

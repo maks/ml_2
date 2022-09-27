@@ -10,4 +10,6 @@ abstract class DeviceMode {
   void onDial(DialEvent event, Modifiers mods);
 
   void onUpdate(AlsaMidiDevice midiDev);
+  void onFocus(AlsaMidiDevice midiDev);
+  
 }

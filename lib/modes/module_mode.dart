@@ -50,4 +50,9 @@ class ModuleMode implements DeviceMode {
       midiDevice.send(colorPad(row, col, fromSVColor(module.color)));
     }
   }
+  
+  @override
+  void onFocus(AlsaMidiDevice midiDev) {
+    // TODO: implement onFocus
+  }
 }

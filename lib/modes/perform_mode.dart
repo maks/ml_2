@@ -24,4 +24,9 @@ class PerformMode implements DeviceMode {
   void onUpdate(AlsaMidiDevice midiDev) {
     // TODO: implement onUpdate
   }
+  
+  @override
+  void onFocus(AlsaMidiDevice midiDev) {
+    // TODO: implement onFocus
+  }
 }
