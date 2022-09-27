@@ -6,10 +6,14 @@ import 'package:dart_sunvox/dart_sunvox.dart';
 import 'package:midi/midi.dart';
 import 'package:collection/collection.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart' as fire;
-import 'package:ml_2/modes.dart';
+import 'package:ml_2/modes/modes.dart';
 import 'package:ml_2/transport_controls.dart';
 import 'package:riverpod/riverpod.dart';
 
+import 'modes/module_mode.dart';
+import 'modes/note_mode.dart';
+import 'modes/perform_mode.dart';
+import 'modes/step_mode.dart';
 import 'modifiers.dart';
 
 class ML2 {
