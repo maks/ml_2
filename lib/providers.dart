@@ -2,6 +2,8 @@ import 'package:bonsai/bonsai.dart';
 import 'package:dart_sunvox/dart_sunvox.dart';
 import 'package:riverpod/riverpod.dart';
 
+import 'modes/oled/screen.dart';
+
 final sunvoxProvider = FutureProvider<LibSunvox>((ref) async {
   // Log.d("sunvoxProvider", "cwd: ${Directory.current}");
   final sunvox = LibSunvox(0, "./sunvox.so");
@@ -20,5 +22,6 @@ final sunvoxProvider = FutureProvider<LibSunvox>((ref) async {
   return sunvox;
 });
 
+final screenProvider = Provider(((ref) => Screen()));
 
 

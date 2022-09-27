@@ -16,6 +16,9 @@ dependencies:
     path: ../dart_sunvox
   midi: ^0.0.5
   riverpod: ^1.0.3+1
+  monochrome_draw: ^1.1.1
+  oled_font_57: ^1.0.1
+  tonic: ^0.2.4
 
 dev_dependencies:
   lints: ^2.0.0

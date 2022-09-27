@@ -2,6 +2,7 @@ import 'package:bonsai/bonsai.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart';
 import 'package:dart_sunvox/dart_sunvox.dart';
 import 'package:midi/midi.dart';
+import 'package:ml_2/modes/oled/screen.dart';
 
 import '../modifiers.dart';
 import '../pads.dart';
@@ -10,8 +11,9 @@ import 'modes.dart';
 /// uses the "drum mode" button
 class ModuleMode implements DeviceMode {
   final LibSunvox _sunvox;
+  final Screen screen;
 
-  ModuleMode(this._sunvox);
+  ModuleMode(this._sunvox, this.screen);
 
   @override
   void onButton(ButtonEvent event, Modifiers mods) {
@@ -25,7 +27,10 @@ class ModuleMode implements DeviceMode {
 
   @override
   void onPad(PadEvent event, Modifiers mods) {
-    // TODO: implement onPad
+    final padIndex = (event.row * 16) + event.column;
+    final module = _sunvox.getModule(padIndex);
+    log("pad[$padIndex] ${module?.name}");
+    screen.drawHeading(module?.name ?? "Un-named");
   }
 
   @override
@@ -39,7 +44,7 @@ class ModuleMode implements DeviceMode {
       if (module == null) {
         continue;
       }
-      log("[$i] ${module.name} [${module.color}] inputs: ${module.inputs} outputs: ${module.outputs}");
+      //log("[$i] ${module.name} [${module.color}] inputs: ${module.inputs} outputs: ${module.outputs}");
       final int row = i ~/ 16;
       final int col = i % 16;
       midiDevice.send(colorPad(row, col, fromSVColor(module.color)));

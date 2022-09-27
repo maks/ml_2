@@ -8,10 +8,10 @@ import 'package:collection/collection.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart' as fire;
 import 'package:ml_2/modes/modes.dart';
 import 'package:ml_2/transport_controls.dart';
-import 'package:riverpod/riverpod.dart';
 
 import 'modes/module_mode.dart';
 import 'modes/note_mode.dart';
+import 'modes/oled/screen.dart';
 import 'modes/perform_mode.dart';
 import 'modes/step_mode.dart';
 import 'modifiers.dart';
@@ -26,10 +26,9 @@ class ML2 {
 
   Modifiers _modifiers = Modifiers.allOff();
   late final TransportControls _transportControls;
-  // ignore: unused_field
-  final ProviderContainer _container;
+  final Screen _screen;
 
-  ML2(this._container, this._sunvox, this.modes);
+  ML2(this._screen, this._sunvox, this.modes);
 
   void playPause() {
     log("Play-Pause!");
@@ -98,6 +97,7 @@ class ML2 {
 
     // initial state update
     log('init: update ui');
+    _screen.drawHeading("Hello ML-2 :)");
     _updateUI();
   }
 
@@ -210,9 +210,12 @@ class ML2 {
         const track = 1;
         _sunvox.sendEvent(track, moduleId, note, 127);
       }
+      currentMode.onPad(event, _modifiers);
     }
     if (event is DialEvent) {
       log("dial: ${event.type} [${event.direction}] ${event.velocity}");
+
+      currentMode.onDial(event, _modifiers);
     }
     //TODO: need to call on timer, but for now just call only after events
     _updateUI();
@@ -239,6 +242,13 @@ class ML2 {
     }
     _transportControls.update(_midiDevice);
     currentMode.onUpdate(_midiDevice);
+
+    _repaintOLED();
+  }
+
+  void _repaintOLED() {
+    _midiDevice.send(fire.sendBitmap(_screen.bitmapData));
+    _screen.clear();
   }
 
   void shutdown() {

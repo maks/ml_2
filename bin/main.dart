@@ -5,6 +5,7 @@ import 'package:dart_sunvox/dart_sunvox.dart';
 import 'package:ml_2/ml_2.dart';
 import 'package:ml_2/modes/module_mode.dart';
 import 'package:ml_2/modes/note_mode.dart';
+import 'package:ml_2/modes/oled/screen.dart';
 import 'package:ml_2/modes/perform_mode.dart';
 import 'package:ml_2/modes/step_mode.dart';
 import 'package:ml_2/providers.dart';
@@ -19,10 +20,11 @@ void main(List<String> arguments) async {
   final container = ProviderContainer();
 
   final LibSunvox sunvox = await container.read(sunvoxProvider.future);
+  final Screen screen = container.read(screenProvider);
 
-  final modes = [StepMode(), NoteMode(), ModuleMode(sunvox), PerformMode()];
+  final modes = [StepMode(), NoteMode(), ModuleMode(sunvox, screen), PerformMode()];
 
-  final ml2 = ML2(container, sunvox, modes);
+  final ml2 = ML2(screen, sunvox, modes);
   await ml2.fireInit();
 
   // typically ctrl-c in shell will generate a sigint
