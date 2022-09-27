@@ -13,6 +13,10 @@ class ModuleMode implements DeviceMode {
   final LibSunvox _sunvox;
   final Screen screen;
 
+  int _selectedModuleIndex = 0;
+
+  SVModule? get currentModule => _sunvox.getModule(_selectedModuleIndex);
+
   ModuleMode(this._sunvox, this.screen);
 
   @override
@@ -27,10 +31,10 @@ class ModuleMode implements DeviceMode {
 
   @override
   void onPad(PadEvent event, Modifiers mods) {
-    final padIndex = (event.row * 16) + event.column;
-    final module = _sunvox.getModule(padIndex);
-    log("pad[$padIndex] ${module?.name}");
-    screen.drawHeading(module?.name ?? "Un-named");
+    _selectedModuleIndex = (event.row * 16) + event.column;
+    final module = _sunvox.getModule(_selectedModuleIndex);
+    log("pad[$_selectedModuleIndex] ${module?.name}");
+    screen.drawContent([module?.name ?? "Un-named"], large: true);
   }
 
   @override
@@ -53,6 +57,6 @@ class ModuleMode implements DeviceMode {
   
   @override
   void onFocus(AlsaMidiDevice midiDev) {
-    // TODO: implement onFocus
+    _showModulesOnPads(midiDev);
   }
 }

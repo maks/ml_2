@@ -144,7 +144,9 @@ class ML2 {
             break;
           case ButtonType.Step:
             _currentModeIndex = 0;
-            currentMode.onFocus(_midiDevice);
+            currentMode.onFocus(
+              _midiDevice,
+            );
             break;
           case ButtonType.Note:
             _currentModeIndex = 1;

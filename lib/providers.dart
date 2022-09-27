@@ -2,6 +2,7 @@ import 'package:bonsai/bonsai.dart';
 import 'package:dart_sunvox/dart_sunvox.dart';
 import 'package:riverpod/riverpod.dart';
 
+import 'modes/module_mode.dart';
 import 'oled/screen.dart';
 
 final sunvoxProvider = FutureProvider<LibSunvox>((ref) async {
@@ -24,4 +25,8 @@ final sunvoxProvider = FutureProvider<LibSunvox>((ref) async {
 
 final screenProvider = Provider(((ref) => Screen()));
 
+final moduleModeProvider = FutureProvider<ModuleMode>((ref) async {
+  final f = await ref.watch(sunvoxProvider.future);
+  return ModuleMode(f, ref.watch(screenProvider));
+});
 

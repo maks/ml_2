@@ -1,3 +1,4 @@
+import 'package:bonsai/bonsai.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart';
 import 'package:midi/midi.dart';
 
@@ -27,6 +28,7 @@ class PerformMode implements DeviceMode {
   
   @override
   void onFocus(AlsaMidiDevice midiDev) {
-    // TODO: implement onFocus
+    log("step clear all pads");
+    midiDev.send(allPadOff);
   }
 }

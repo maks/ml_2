@@ -21,8 +21,9 @@ void main(List<String> arguments) async {
 
   final LibSunvox sunvox = await container.read(sunvoxProvider.future);
   final Screen screen = container.read(screenProvider);
+  final ModuleMode moduleMode = await container.read(moduleModeProvider.future);
 
-  final modes = [StepMode(), NoteMode(sunvox), ModuleMode(sunvox, screen), PerformMode()];
+  final modes = [StepMode(), NoteMode(container, sunvox), moduleMode, PerformMode()];
 
   final ml2 = ML2(screen, sunvox, modes);
   await ml2.fireInit();

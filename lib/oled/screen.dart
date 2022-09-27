@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:monochrome_draw/monochrome_draw.dart';
 import 'package:oled_font_57/oled_font_57.dart' as font57;
 
@@ -10,6 +12,7 @@ final defaultFont = Font(
 );
 
 const lineHeight = 8;
+const maxVisibleItems = 4;
 
 /// Access to drawing onto the Fire's OLED
 class Screen {
@@ -24,7 +27,13 @@ class Screen {
     _oledCanvas.writeString(defaultFont, 1, '=' * heading.length, true, true, 1);
   }
 
-  void drawLarge(String text) {}
+  void drawContent(List<String> content, {bool large = false}) {
+    const offset = lineHeight * 2;
+    for (int line = 0; line < min(content.length, maxVisibleItems); line++) {
+      _oledCanvas.setCursor(0, (8 * line) + offset);
+      _oledCanvas.writeString(defaultFont, large ? 2 : 1, content[line], true, true, 1);
+    }
+  }
 
   void refresh() {}
 
