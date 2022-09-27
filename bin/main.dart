@@ -5,7 +5,7 @@ import 'package:dart_sunvox/dart_sunvox.dart';
 import 'package:ml_2/ml_2.dart';
 import 'package:ml_2/modes/module_mode.dart';
 import 'package:ml_2/modes/note_mode.dart';
-import 'package:ml_2/modes/oled/screen.dart';
+import 'package:ml_2/oled/screen.dart';
 import 'package:ml_2/modes/perform_mode.dart';
 import 'package:ml_2/modes/step_mode.dart';
 import 'package:ml_2/providers.dart';

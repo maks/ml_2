@@ -3,7 +3,7 @@ import 'package:dart_fire_midi/dart_fire_midi.dart';
 import 'package:midi/midi.dart';
 
 import '../modifiers.dart';
-import 'modes.dart';
+import 'mode.dart';
 
 class StepMode implements DeviceMode {
   @override

@@ -2,7 +2,7 @@ import 'package:bonsai/bonsai.dart';
 import 'package:dart_sunvox/dart_sunvox.dart';
 import 'package:riverpod/riverpod.dart';
 
-import 'modes/oled/screen.dart';
+import 'oled/screen.dart';
 
 final sunvoxProvider = FutureProvider<LibSunvox>((ref) async {
   // Log.d("sunvoxProvider", "cwd: ${Directory.current}");

@@ -2,11 +2,11 @@ import 'package:bonsai/bonsai.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart';
 import 'package:dart_sunvox/dart_sunvox.dart';
 import 'package:midi/midi.dart';
-import 'package:ml_2/modes/oled/screen.dart';
+import 'package:ml_2/oled/screen.dart';
 
 import '../modifiers.dart';
 import '../pads.dart';
-import 'modes.dart';
+import 'mode.dart';
 
 /// uses the "drum mode" button
 class ModuleMode implements DeviceMode {

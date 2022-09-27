@@ -4,7 +4,7 @@ import 'package:dart_sunvox/dart_sunvox.dart';
 import 'package:midi/midi.dart';
 
 import '../modifiers.dart';
-import 'modes.dart';
+import 'mode.dart';
 
 class NoteMode implements DeviceMode {
   final LibSunvox _sunvox;
