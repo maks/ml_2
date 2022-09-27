@@ -19,7 +19,7 @@ class ML2 {
   List<DeviceMode> modes = [];
 
   DeviceMode get currentMode => modes[_currentModeIndex];
-  
+
   Modifiers _modifiers = Modifiers.allOff();
   late final TransportControls _transportControls;
   // ignore: unused_field
@@ -38,13 +38,17 @@ class ML2 {
     } else {
       _sunvox.playFromStart();
       _transportControls.play();
-    }   
+    }
   }
 
   void stop() {
     log("Stop!");
     _sunvox.stop();
-    _transportControls.stop();
+    if (_transportControls.state == TransportState.stopped) {
+      _transportControls.idle();
+    } else {
+      _transportControls.stop();
+    }
   }
 
   void record() {
@@ -64,7 +68,7 @@ class ML2 {
     final midiDev = midiDevices.firstWhereOrNull((dev) => dev.name.contains('FL STUDIO'));
     if (midiDev == null) {
       throw Exception('missing Akai Fire device');
-    } 
+    }
     _midiDevice = midiDev;
 
     if (!(await midiDev.connect())) {
@@ -92,7 +96,6 @@ class ML2 {
     log('init: update ui');
     _updateUI();
   }
-
 
   void _handleInput(FireInputEvent event) {
     log("handleInput event: $event");
@@ -240,4 +243,3 @@ class ML2 {
     log("midi device disconnected");
   }
 }
-

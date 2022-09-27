@@ -1,17 +1,19 @@
 import 'package:dart_fire_midi/dart_fire_midi.dart';
 import 'package:midi/midi.dart';
 
-enum TransportState { none, playing, paused, stopped, recording }
+enum TransportState { idle, playing, paused, stopped, recording }
 
 class TransportControls {
   
-  TransportState _transportState = TransportState.none;
+  TransportState _transportState = TransportState.idle;
 
   TransportState get state => _transportState;
 
   TransportControls() {
-    stop();
+    idle();
   }
+
+  void idle() => _transportState = TransportState.idle;
 
   void play() => _transportState = TransportState.playing;
 
@@ -24,7 +26,8 @@ class TransportControls {
   void update(final AlsaMidiDevice midiDevice) {
     _allOff(midiDevice);
     switch (_transportState) {
-      case TransportState.none:
+      case TransportState.idle:
+        midiDevice.send(ButtonControls.buttonOn(ButtonCode.stop, ButtonLedColor.color1.index));
         break;
       case TransportState.playing:
         midiDevice.send(ButtonControls.buttonOn(ButtonCode.play, ButtonLedColor.color3.index));
@@ -33,7 +36,7 @@ class TransportControls {
         midiDevice.send(ButtonControls.buttonOn(ButtonCode.play, ButtonLedColor.color1.index));
         break;
       case TransportState.stopped:
-        midiDevice.send(ButtonControls.buttonOn(ButtonCode.stop, ButtonLedColor.color1.index));
+        midiDevice.send(ButtonControls.buttonOn(ButtonCode.stop, ButtonLedColor.color2.index));
         break;
       case TransportState.recording:
         midiDevice.send(ButtonControls.buttonOn(ButtonCode.record, ButtonLedColor.color2.index));
@@ -46,4 +49,5 @@ class TransportControls {
     midiDevice.send(ButtonControls.buttonOn(ButtonCode.stop, ButtonLedColor.off.index));
     midiDevice.send(ButtonControls.buttonOn(ButtonCode.record, ButtonLedColor.off.index));
   }
+
 }
