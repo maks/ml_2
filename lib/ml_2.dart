@@ -15,12 +15,15 @@ import 'oled/screen.dart';
 import 'modes/perform_mode.dart';
 import 'modes/step_mode.dart';
 import 'modifiers.dart';
+import 'volume.dart';
 
 class ML2 {
   late final LibSunvox _sunvox;
   late final AlsaMidiDevice _midiDevice;
   int _currentModeIndex = 0;
   List<DeviceMode> modes = [];
+
+  final _volume = Volume(64); // init to 25%
 
   DeviceMode get currentMode => modes[_currentModeIndex];
 
@@ -214,7 +217,14 @@ class ML2 {
     if (event is DialEvent) {
       log("dial: ${event.type} [${event.direction}] ${event.velocity}");
 
-      currentMode.onDial(event, _modifiers);
+      if (event.type == DialType.Volume) {
+        (event.direction == DialDirection.Left) ? _volume.dec(event.velocity) : _volume.inc(event.velocity);
+        _sunvox.volume = _volume.value;
+        _screen.drawContent(["${_volume.value}"], large: true);
+      } else {
+        currentMode.onDial(event, _modifiers);
+      }
+      
     }
     //TODO: need to call on timer, but for now just call only after events
     _updateUI();

@@ -11,13 +11,12 @@ final sunvoxProvider = FutureProvider<LibSunvox>((ref) async {
   final v = sunvox.versionString();
   Log.d("sunvoxProvider", 'sunvox lib version: $v');
 
-  const filename = "song01.sunvox";
-  // const filename = "default1.sunvox";
+  // const filename = "song01.sunvox";
+  const filename = "default1.sunvox";
   await sunvox.load(filename);
   // or as data using Dart's file ops
   // final data = File(filename).readAsBytesSync();
-  sunvox.volume = 256;
-
+ 
   Log.d("sunvoxProvider", "project name: ${sunvox.projectName}");
   Log.d("sunvoxProvider", "modules: ${sunvox.moduleSlotsCount}");
   return sunvox;
