@@ -9,7 +9,7 @@ R1:
 [X] volume dial, master volume, show on Oled
 [ ] control with dials selected module "controls", display value on Oled, use pattern button to cycle thru pages" of 3 "controls"
 [ ] heading + large number widget for Oled
-[ ] chromatic keyboard on pads for Note mode
+[X] chromatic keyboard on pads for Note mode
 [ ] show connected output module pads while module pad pressed
 
 R2:
