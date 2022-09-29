@@ -9,6 +9,7 @@ R1:
 [X] volume dial, master volume, show on Oled
 [X] send note off on pad "keyboard" key release
 [X] use widgets for pads/oled, eg. chromatic-keyboard, module list, etc
+[X] show list of modules in Note mode, filtered to only include "playable" types (generator, drumsynth, multisynth etc) and not inc compressor, output etc
 [ ] control with dials selected module "controls", display value on Oled, use pattern button to cycle thru pages" of 3 "controls"
 [X] convert modes to be widgets
 [ ] convert transport controls class to be a widget

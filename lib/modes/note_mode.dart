@@ -2,6 +2,7 @@ import 'package:bonsai/bonsai.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart';
 import 'package:dart_sunvox/dart_sunvox.dart';
 import 'package:ml_2/widgets/chromatic_keyboard.dart';
+import 'package:ml_2/widgets/module_list.dart';
 import 'package:ml_2/widgets/widget.dart';
 
 import '../modifiers.dart';
@@ -13,6 +14,7 @@ class NoteMode implements DeviceMode {
 
   NoteMode(this._context) {
     _children.add(ChromaticKeyboard(_context, onNoteOn: _playNote, onNoteOff: _stopNote));
+    _children.add(ModuleList(_context));
   }
 
   @override
