@@ -1,11 +1,15 @@
 import 'package:bonsai/bonsai.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart';
-import 'package:midi/midi.dart';
+import 'package:ml_2/widgets/widget.dart';
 
 import '../modifiers.dart';
 import 'mode.dart';
 
 class PerformMode implements DeviceMode {
+  final WidgetContext _context;
+
+  PerformMode(this._context);
+
   @override
   void onButton(ButtonEvent event, Modifiers mods) {
     // TODO: implement onButton
@@ -22,13 +26,13 @@ class PerformMode implements DeviceMode {
   }
 
   @override
-  void onUpdate(AlsaMidiDevice midiDev) {
+  void paint() {
     // TODO: implement onUpdate
   }
   
   @override
-  void onFocus(AlsaMidiDevice midiDev) {
+  void onFocus() {
     log("step clear all pads");
-    midiDev.send(allPadOff);
+    _context.sendMidi(allPadOff);
   }
 }

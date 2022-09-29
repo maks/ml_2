@@ -1,10 +1,8 @@
-
 import 'package:dart_fire_midi/dart_fire_midi.dart';
+import 'package:ml_2/modifiers.dart';
 import 'package:ml_2/widgets/widget.dart';
 
-import '../modifiers.dart';
-
-abstract class DeviceMode extends Widget {
+class PadWidget implements Widget {
   @override
   void onButton(ButtonEvent event, Modifiers mods) {
     // empty default implementation

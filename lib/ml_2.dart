@@ -8,6 +8,8 @@ import 'package:collection/collection.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart' as fire;
 import 'package:ml_2/modes/mode.dart';
 import 'package:ml_2/transport_controls.dart';
+import 'package:ml_2/widgets/widget.dart';
+import 'package:riverpod/riverpod.dart';
 
 import 'modes/module_mode.dart';
 import 'modes/note_mode.dart';
@@ -15,9 +17,11 @@ import 'oled/screen.dart';
 import 'modes/perform_mode.dart';
 import 'modes/step_mode.dart';
 import 'modifiers.dart';
+import 'providers.dart';
 import 'volume.dart';
 
 class ML2 {
+  final ProviderContainer _container;
   late final LibSunvox _sunvox;
   late final AlsaMidiDevice _midiDevice;
   int _currentModeIndex = 0;
@@ -29,9 +33,21 @@ class ML2 {
 
   Modifiers _modifiers = Modifiers.allOff();
   late final TransportControls _transportControls;
-  final Screen _screen;
+  late final Screen _screen;
 
-  ML2(this._screen, this._sunvox, this.modes);
+  ML2(this._container);
+
+  Future<void> init() async {
+    _sunvox = await _container.read(sunvoxProvider.future);
+    _screen = _container.read(screenProvider);
+
+    fireInit();
+
+    final context = WidgetContext(_container, _midiDevice, _screen, _sunvox);
+
+    modes = [StepMode(context), NoteMode(context), ModuleMode(context), PerformMode(context)];
+  }
+
 
   void playPause() {
     log("Play-Pause!");
@@ -89,7 +105,7 @@ class ML2 {
     midiDev.send(fire.allOffMessage);
     log('init: all off');
 
-    // uncomment to light up top left grid button blue
+    // light up top left grid button blue to show init state
     midiDev.send(fire.colorPad(0, 0, fire.PadColor(10, 10, 70)));
 
     // listen for all incoming midi messages from the Fire
@@ -100,7 +116,7 @@ class ML2 {
 
     // initial state update
     log('init: update ui');
-    _screen.drawHeading("Hello ML-2 :)");
+    _screen.drawContent(["ML-2 :-)"], large: true);
     _updateUI();
   }
 
@@ -147,21 +163,19 @@ class ML2 {
             break;
           case ButtonType.Step:
             _currentModeIndex = 0;
-            currentMode.onFocus(
-              _midiDevice,
-            );
+            currentMode.onFocus();
             break;
           case ButtonType.Note:
             _currentModeIndex = 1;
-            currentMode.onFocus(_midiDevice);
+            currentMode.onFocus();
             break;
           case ButtonType.Drum:
             _currentModeIndex = 2;
-            currentMode.onFocus(_midiDevice);
+            currentMode.onFocus();
             break;
           case ButtonType.Perform:
             _currentModeIndex = 3;
-            currentMode.onFocus(_midiDevice);
+            currentMode.onFocus();
             break;
           case ButtonType.Shift:
             _modifiers = _modifiers.copyWith(shift: false);
@@ -210,6 +224,7 @@ class ML2 {
             break;
         }
       }
+      currentMode.onButton(event, _modifiers);
     }
     if (event is PadEvent) {      
       currentMode.onPad(event, _modifiers);
@@ -250,7 +265,7 @@ class ML2 {
         break;
     }
     _transportControls.update(_midiDevice);
-    currentMode.onUpdate(_midiDevice);
+    currentMode.paint();
 
     _repaintOLED();
   }
@@ -261,7 +276,12 @@ class ML2 {
   }
 
   void shutdown() {
-    log("ml 2 shutting down");
+    log("ML-2 shutting down...");
+    _screen.drawContent(["Shutting down..."]);
+    _midiDevice.send(fire.sendBitmap(_screen.bitmapData));
+    _midiDevice.send(allOffMessage);
+    _sunvox.shutDown();
+    sleep(Duration(milliseconds: 500)); //short wait for all off mesg before disconnecting midi
     _midiDevice.disconnect();
     log("midi device disconnected");
   }
