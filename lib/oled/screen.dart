@@ -28,10 +28,16 @@ class Screen {
   }
 
   void drawContent(List<String> content, {bool large = false}) {
+    final fontLineHieght = large == true ? lineHeight * 3 : lineHeight;
     const offset = lineHeight * 2;
     for (int line = 0; line < min(content.length, maxVisibleItems); line++) {
-      _oledCanvas.setCursor(0, (8 * line) + offset);
-      _oledCanvas.writeString(defaultFont, large ? 2 : 1, content[line], true, true, 1);
+      String lineText = content[line];
+      if (lineText.length > 10) {
+        print("too long:$lineText");
+        lineText = lineText.substring(0, 10);
+      }
+      _oledCanvas.setCursor(0, (fontLineHieght * line) + offset);
+      _oledCanvas.writeString(defaultFont, large ? 2 : 1, lineText, true, false, 1);
     }
   }
 

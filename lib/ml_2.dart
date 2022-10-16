@@ -133,7 +133,7 @@ class ML2 {
           case ButtonType.PatternUp:
             // TODO: Handle this case.
             break;
-          case ButtonType.PatterDown:
+          case ButtonType.PatternDown:
             // TODO: Handle this case.
             break;
           case ButtonType.Browser:

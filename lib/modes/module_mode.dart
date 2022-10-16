@@ -12,21 +12,54 @@ class ModuleMode implements DeviceMode {
   final WidgetContext _context;
 
   int _selectedModuleIndex = 0;
+  int _controllerPage = 0;
 
   SVModule? get _currentModule => _context.sunvox.getModule(_selectedModuleIndex);
 
   ModuleMode(this._context) {
     _context.currentModule = _currentModule;
+    log("new ModuleMode");
   }
 
   @override
   void onButton(ButtonEvent event, Modifiers mods) {
-    // TODO: implement onButton
+    if (event.direction == ButtonDirection.Down) {
+      if (event.type == ButtonType.PatternUp) {
+        _controllerPage = _controllerPage + 1;
+      }
+      if (event.type == ButtonType.PatternDown) {
+        _controllerPage = _controllerPage - 1;
+      }
+    }
+    log("controller page: $_controllerPage");
   }
 
   @override
   void onDial(DialEvent event, Modifiers mods) {
-    // TODO: implement onDial
+    int dialIndex = 0;
+    if (event.type == DialType.Filter) {
+      dialIndex = 1;
+    }
+    if (event.type == DialType.Resonance) {
+      dialIndex = 2;
+    }
+
+    if (event.direction == DialDirection.TouchOn) {
+      final controllers = _context.currentModule?.controllers;
+
+      if (controllers == null) {
+        log("NO CURRENT CONTROLLER");
+        return;
+      }
+
+      final controllerIndex = dialIndex + (_controllerPage * 3);
+      if (controllerIndex < controllers.length) {
+        final controller = controllers[controllerIndex];
+        _context.screen.drawContent([controller.name, "${controller.value}"], large: true);
+      } else {
+        log("dial controller out of range: $controllerIndex");
+      }
+    }
   }
 
   @override
@@ -56,7 +89,7 @@ class ModuleMode implements DeviceMode {
       _context.sendMidi(colorPad(row, col, fromSVColor(module.color)));
     }
   }
-  
+
   @override
   void onFocus() {
     _showModulesOnPads();
