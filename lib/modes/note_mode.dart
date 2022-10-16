@@ -54,14 +54,15 @@ class NoteMode implements DeviceMode {
     }
   }
 
-  void _playNote(int note) {
+  void _playNote(int note, int velocity) {
     final module = _context.currentModule;
     const track = 1;
     final moduleId = module?.id;
     if (moduleId == null) {
       throw Exception("no current module!");
     }
-    _context.sunvox.sendEvent(track, moduleId, note, 127);
+    // log("VEL:$velocity");
+    _context.sunvox.sendEvent(track, moduleId, note, velocity);
   }
 
   void _stopNote(int note) {

@@ -8,7 +8,7 @@ import '../modifiers.dart';
 import 'pad_widget.dart';
 
 class ChromaticKeyboard extends PadWidget {
-  final Function(int) onNoteOn;
+  final Function(int, int) onNoteOn;
   final Function(int) onNoteOff;
   final WidgetContext _context;
   int _octave = 4;
@@ -24,7 +24,7 @@ class ChromaticKeyboard extends PadWidget {
   void onPad(PadEvent event, Modifiers mods) {
     final index = _noteFromPadIndex(_octave, event.row * 16 + event.column);
     if (event.direction == ButtonDirection.Down) {
-      onNoteOn(index);
+      onNoteOn(index, event.velocity);
       _context.screen.clear();
       // use a char thats available in the simple font used for Oled canvas drawing
       final pitch = Pitch.fromMidiNumber(index).toString().replaceAll("♯", "#");

@@ -109,8 +109,7 @@ class ML2 {
     midiDev.send(fire.colorPad(0, 0, fire.PadColor(10, 10, 70)));
 
     // listen for all incoming midi messages from the Fire
-    midiDev.receivedMessages.listen((event) {
-      // log('input event: $event');
+    midiDev.receivedMessages.listen((event) {     
       _handleInput(FireInputEvent.fromMidi(event.data));
     });
 
