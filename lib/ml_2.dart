@@ -120,7 +120,7 @@ class ML2 {
   }
 
   void _handleInput(FireInputEvent event) {
-    log("handleInput event: $event");
+    //log("handleInput event: $event");
     if (event is ButtonEvent) {
       if (event.direction == ButtonDirection.Down) {
         switch (event.type) {

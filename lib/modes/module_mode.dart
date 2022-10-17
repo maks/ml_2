@@ -44,22 +44,33 @@ class ModuleMode implements DeviceMode {
       dialIndex = 2;
     }
 
+    final controllers = _context.currentModule?.controllers;
+    if (controllers == null) {
+      log("NO CURRENT CONTROLLER");
+      return;
+    }
+    final controllerIndex = dialIndex + (_controllerPage * 3);
+    late final SVModuleController controller;
+    if (controllerIndex < controllers.length) {
+      controller = controllers[controllerIndex];
+    } else {
+      log("dial controller out of range: $controllerIndex");
+      return;
+    }
     if (event.direction == DialDirection.TouchOn) {
-      final controllers = _context.currentModule?.controllers;
+      // na just update screen at end of method
+    }
 
-      if (controllers == null) {
-        log("NO CURRENT CONTROLLER");
+    if (event.direction == DialDirection.Left || event.direction == DialDirection.Right) {
+      //final val = Volume(controller.value);
+      (event.direction == DialDirection.Left) ? controller.dec(event.velocity) : controller.inc(event.velocity);
+      final modId = _currentModule?.id;
+      if (modId == null) {
+        log("missing module id for controller value set");
         return;
       }
-
-      final controllerIndex = dialIndex + (_controllerPage * 3);
-      if (controllerIndex < controllers.length) {
-        final controller = controllers[controllerIndex];
-        _context.screen.drawContent([controller.name, "${controller.value}"], large: true);
-      } else {
-        log("dial controller out of range: $controllerIndex");
-      }
     }
+    _context.screen.drawContent([controller.name, "${controller.displayValue ?? controller.value}"], large: true);
   }
 
   @override
