@@ -61,8 +61,8 @@ class NoteMode implements DeviceMode {
     if (moduleId == null) {
       throw Exception("no current module!");
     }
-    // log("VEL:$velocity");
-    _context.sunvox.sendNote(track, moduleId, note, velocity);
+    // use hardcode full velocity as Fire's pads not sensitive enough
+    _context.sunvox.sendNote(track, moduleId, note, 128);
   }
 
   void _stopNote(int note) {
