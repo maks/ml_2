@@ -18,7 +18,6 @@ class ModuleMode implements DeviceMode {
 
   ModuleMode(this._context) {
     _context.currentModule = _currentModule;
-    log("new ModuleMode");
   }
 
   @override
@@ -46,7 +45,7 @@ class ModuleMode implements DeviceMode {
 
     final controllers = _context.currentModule?.controllers;
     if (controllers == null) {
-      log("NO CURRENT CONTROLLER");
+      log("no current controller");
       return;
     }
     final controllerIndex = dialIndex + (_controllerPage * 3);
@@ -61,8 +60,7 @@ class ModuleMode implements DeviceMode {
       // na just update screen at end of method
     }
 
-    if (event.direction == DialDirection.Left || event.direction == DialDirection.Right) {
-      //final val = Volume(controller.value);
+    if (event.direction == DialDirection.Left || event.direction == DialDirection.Right) {     
       (event.direction == DialDirection.Left) ? controller.dec(event.velocity) : controller.inc(event.velocity);
       final modId = _currentModule?.id;
       if (modId == null) {
