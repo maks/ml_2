@@ -10,9 +10,10 @@ R1: Modules & Playing
 [X] send note off on pad "keyboard" key release
 [X] use widgets for pads/oled, eg. chromatic-keyboard, module list, etc
 [X] show list of modules in Note mode, filtered to only include "playable" types (generator, drumsynth, multisynth etc) and not inc compressor, output etc
-[ ] control with dials selected module "controls", display value on Oled, use pattern button to cycle thru pages" of 3 "controls"
+[X] control with dials selected module "controls", display value on Oled, use pattern button to cycle thru pages of 3 "controls"
 [X] convert modes to be widgets
-[ ] heading + large number widget for Oled
+[ ] show names of controls when switching controller "pages"
+[X] heading + large number widget for Oled
 [X] chromatic keyboard on pads for Note mode
 [ ] show connected output module pads while module pad pressed
 [ ] add/remove modules using Oled+select dial to choose new module to add
