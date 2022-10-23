@@ -13,6 +13,7 @@ class ModuleMode implements DeviceMode {
 
   int _selectedModuleIndex = 0;
   int _controllerPage = 0;
+  bool _browser = false;
 
   SVModule? get _currentModule => _context.sunvox.getModule(_selectedModuleIndex);
 
@@ -28,6 +29,18 @@ class ModuleMode implements DeviceMode {
       }
       if (event.type == ButtonType.PatternDown) {
         _controllerPage = _controllerPage - 1;
+      }
+      if (event.type == ButtonType.Alt) {
+        final type = "Analog generator";
+        log("create new mod: $type");
+        _context.sunvox.createModule(type, "Maks AG2");
+        //TODO: manual paint call until periodic calls to paint is implemented
+        paint();
+      }
+      if (event.type == ButtonType.Browser) {
+        _browser = !_browser;
+        //TODO: manual paint call until periodic calls to paint is implemented
+        paint();
       }
     }
     log("controller page: $_controllerPage");
@@ -84,6 +97,9 @@ class ModuleMode implements DeviceMode {
   @override
   void paint() {
     _showModulesOnPads();
+    final ButtonLedColor browserButtonState = _browser ? ButtonLedColor.color1 : ButtonLedColor.off;
+    _context.sendMidi(ButtonControls.buttonOn(ButtonCode.browser, browserButtonState.index));
+    
   }
 
   void _showModulesOnPads() {

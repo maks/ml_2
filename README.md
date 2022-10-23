@@ -19,8 +19,9 @@ R1: Modules & Playing
 [ ] add/remove modules using Oled+select dial to choose new module to add
 [ ] connect/disconnect modules together using pads
 [ ] convert transport controls class to be a widget
+[ ] scales keyboard (C maj, dorian, etc)
 
-R2: Project Manangement
+R2: Project Management
 [ ] Go into project menu on Oled with Shift+Browser button
 [ ] Create new project (using project menu item)
 [ ] Rename current project (use pads as qwerty keybd)
