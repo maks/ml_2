@@ -24,7 +24,7 @@ typedef VoidCallback = void Function();
 class WidgetContext {
   final ProviderContainer container;
   final AlsaMidiDevice _midiDevice;
-  final Screen screen;
+  final OledScreen screen;
   final LibSunvox sunvox;
 
   SVModule? currentModule;

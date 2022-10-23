@@ -25,7 +25,6 @@ class ChromaticKeyboard extends PadWidget {
     final index = _noteFromPadIndex(_octave, event.row * 16 + event.column);
     if (event.direction == ButtonDirection.Down) {
       onNoteOn(index, event.velocity);
-      _context.screen.clear();
       // use a char thats available in the simple font used for Oled canvas drawing
       final pitch = Pitch.fromMidiNumber(index).toString().replaceAll("♯", "#");
       _context.screen.drawContent([pitch], large: true);
@@ -42,7 +41,6 @@ class ChromaticKeyboard extends PadWidget {
       } else if (event.type == ButtonType.GridRight) {
         _octave = min(_octave + 1, 7);
       }
-      _context.screen.clear();
       _context.screen.drawContent(["Octave $_octave"], large: true);
     }
   }

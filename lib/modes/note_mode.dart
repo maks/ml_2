@@ -59,7 +59,12 @@ class NoteMode implements DeviceMode {
     const track = 1;
     final moduleId = module?.id;
     if (moduleId == null) {
-      throw Exception("no current module!");
+      _context.screen.drawContent(["No Module", "Selected"]);
+      return;
+    }
+    if (moduleId == 0) {
+      _context.screen.drawContent(["Output Module", "No Sound!"]);
+      return;
     }
     // use hardcode full velocity as Fire's pads not sensitive enough
     _context.sunvox.sendNote(track, moduleId, note, 128);
@@ -70,7 +75,8 @@ class NoteMode implements DeviceMode {
     const track = 1;
     final moduleId = module?.id;
     if (moduleId == null) {
-      throw Exception("no current module!");
+      log("no current module!");
+      return;
     }
     _context.sunvox.sendNote(track, moduleId, sunvoxNoteOffCommand, 127);
   }

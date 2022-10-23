@@ -21,4 +21,4 @@ final sunvoxProvider = FutureProvider<LibSunvox>((ref) async {
   return sunvox;
 });
 
-final screenProvider = Provider(((ref) => Screen()));
+final screenProvider = Provider(((ref) => OledScreen()));

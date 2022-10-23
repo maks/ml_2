@@ -5,11 +5,13 @@ import 'package:ml_2/widgets/widget.dart';
 
 import '../modifiers.dart';
 import '../pads.dart';
+import '../widgets/oled_listscreen.dart';
 import 'mode.dart';
 
 /// uses the "drum mode" button
 class ModuleMode implements DeviceMode {
   final WidgetContext _context;
+  late final OledListScreenWidget _browserListWidget;
 
   int _selectedModuleIndex = 0;
   int _controllerPage = 0;
@@ -19,11 +21,25 @@ class ModuleMode implements DeviceMode {
 
   ModuleMode(this._context) {
     _context.currentModule = _currentModule;
+    _browserListWidget = OledListScreenWidget(_context.screen, AllModulesListProvider(), _browserOnModuleSelected);
   }
 
   @override
-  void onButton(ButtonEvent event, Modifiers mods) {
+  void onButton(ButtonEvent event, Modifiers mods) { 
     if (event.direction == ButtonDirection.Down) {
+      if (event.type == ButtonType.Browser) {
+        _browser = !_browser;
+        if (_browser) {
+          _browserListWidget.onFocus();
+        } else {
+          paint();
+        }
+      }
+      if (_browser) {
+        _browserListWidget.onButton(event, mods);
+        return;
+      }
+
       if (event.type == ButtonType.PatternUp) {
         _controllerPage = _controllerPage + 1;
       }
@@ -31,23 +47,20 @@ class ModuleMode implements DeviceMode {
         _controllerPage = _controllerPage - 1;
       }
       if (event.type == ButtonType.Alt) {
-        final type = "Analog generator";
-        log("create new mod: $type");
-        _context.sunvox.createModule(type, "Maks AG2");
-        //TODO: manual paint call until periodic calls to paint is implemented
-        paint();
+        
       }
-      if (event.type == ButtonType.Browser) {
-        _browser = !_browser;
-        //TODO: manual paint call until periodic calls to paint is implemented
-        paint();
-      }
+     
     }
     log("controller page: $_controllerPage");
   }
 
   @override
   void onDial(DialEvent event, Modifiers mods) {
+    if (_browser) {
+      _browserListWidget.onDial(event, mods);
+      return;
+    }
+
     int dialIndex = 0;
     if (event.type == DialType.Filter) {
       dialIndex = 1;
@@ -97,9 +110,17 @@ class ModuleMode implements DeviceMode {
   @override
   void paint() {
     _showModulesOnPads();
+
+    // show browser mode on/off LED
     final ButtonLedColor browserButtonState = _browser ? ButtonLedColor.color1 : ButtonLedColor.off;
     _context.sendMidi(ButtonControls.buttonOn(ButtonCode.browser, browserButtonState.index));
-    
+  }
+
+  void _browserOnModuleSelected(String type, void _) {
+    log("==> create new mod: $type");
+    _context.sunvox.createModule(type, type);
+    //TODO: manual paint call until periodic calls to paint is implemented
+    paint();
   }
 
   void _showModulesOnPads() {
@@ -119,4 +140,9 @@ class ModuleMode implements DeviceMode {
   void onFocus() {
     _showModulesOnPads();
   }
+}
+
+class AllModulesListProvider implements ListItemProvider {
+  @override
+  String? itemName(int index) => index < allModuleTypes.length ? allModuleTypes.elementAt(index) : null;
 }

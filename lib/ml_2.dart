@@ -33,7 +33,7 @@ class ML2 {
 
   Modifiers _modifiers = Modifiers.allOff();
   late final TransportControls _transportControls;
-  late final Screen _screen;
+  late final OledScreen _screen;
 
   ML2(this._container);
 
@@ -121,7 +121,7 @@ class ML2 {
 
   void _handleInput(FireInputEvent event) {
     //log("handleInput event: $event");
-    if (event is ButtonEvent) {
+    if (event is ButtonEvent && event is! PadEvent) {
       if (event.direction == ButtonDirection.Down) {
         switch (event.type) {
           case ButtonType.Play:
