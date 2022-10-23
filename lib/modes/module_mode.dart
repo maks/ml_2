@@ -118,7 +118,14 @@ class ModuleMode implements DeviceMode {
 
   void _browserOnModuleSelected(String type, void _) {
     log("==> create new mod: $type");
-    _context.sunvox.createModule(type, type);
+    final nuModule = _context.sunvox.createModule(type, type);
+
+    if (nuModule != null) {
+      // for now just automatically connect to output module
+      nuModule.connectToModule(0);
+    } else {
+      throw Exception("could not create module $type");
+    }
     //TODO: manual paint call until periodic calls to paint is implemented
     paint();
   }
