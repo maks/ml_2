@@ -77,14 +77,14 @@ packages:
       path: "../dart_fire_midi"
       relative: true
     source: path
-    version: "0.1.0"
+    version: "0.2.0"
   dart_sunvox:
     dependency: "direct main"
     description:
       path: "../dart_sunvox"
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.0.2"
   ffi:
     dependency: transitive
     description:

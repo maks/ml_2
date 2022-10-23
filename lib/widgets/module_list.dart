@@ -1,6 +1,5 @@
 import 'package:bonsai/bonsai.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart';
-import 'package:dart_sunvox/dart_sunvox.dart';
 
 import '../modifiers.dart';
 import '../pads.dart';
@@ -10,8 +9,9 @@ import 'widget.dart';
 class ModuleList extends PadWidget {
   final WidgetContext _context;
   final instrumentModulesMap = <int, int>{};
+  final bool onlyInstruments;
 
-  ModuleList(this._context);
+  ModuleList(this._context, {this.onlyInstruments = false});
 
   @override
   void onPad(PadEvent event, Modifiers mods) {
@@ -39,8 +39,8 @@ class ModuleList extends PadWidget {
       if (module == null) {
         continue;
       }
-      if ((module.flags & sunvoxModuleFlagEffect) == 2) {
-        // log("skip: ${module.name}");
+      if (onlyInstruments && !module.isInstrument) {
+        log("skip: ${module.name}");
         continue;
       }
       instrumentModulesMap[j++] = i;

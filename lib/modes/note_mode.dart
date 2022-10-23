@@ -1,20 +1,24 @@
 import 'package:bonsai/bonsai.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart';
-import 'package:dart_sunvox/dart_sunvox.dart';
 import 'package:ml_2/widgets/chromatic_keyboard.dart';
 import 'package:ml_2/widgets/module_list.dart';
 import 'package:ml_2/widgets/widget.dart';
 
 import '../modifiers.dart';
 import 'mode.dart';
+import 'play_note.dart';
 
 class NoteMode implements DeviceMode {
   final WidgetContext _context;
-  final List<Widget> _children = [];  
+  final List<Widget> _children = [];
 
   NoteMode(this._context) {
-    _children.add(ChromaticKeyboard(_context, onNoteOn: _playNote, onNoteOff: _stopNote));
-    _children.add(ModuleList(_context));
+    _children.add(ChromaticKeyboard(
+      _context,
+      onNoteOn: (note, vel) => playNote(_context, note, vel),
+      onNoteOff: (note) => stopNote(_context, note),
+    ));
+    _children.add(ModuleList(_context, onlyInstruments: true));
   }
 
   @override
@@ -54,30 +58,5 @@ class NoteMode implements DeviceMode {
     }
   }
 
-  void _playNote(int note, int velocity) {
-    final module = _context.currentModule;
-    const track = 1;
-    final moduleId = module?.id;
-    if (moduleId == null) {
-      _context.screen.drawContent(["No Module", "Selected"]);
-      return;
-    }
-    if (moduleId == 0) {
-      _context.screen.drawContent(["Output Module", "No Sound!"]);
-      return;
-    }
-    // use hardcode full velocity as Fire's pads not sensitive enough
-    _context.sunvox.sendNote(track, moduleId, note, 128);
-  }
 
-  void _stopNote(int note) {
-    final module = _context.currentModule;
-    const track = 1;
-    final moduleId = module?.id;
-    if (moduleId == null) {
-      log("no current module!");
-      return;
-    }
-    _context.sunvox.sendNote(track, moduleId, sunvoxNoteOffCommand, 127);
-  }
 }

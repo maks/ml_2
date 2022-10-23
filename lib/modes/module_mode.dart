@@ -4,23 +4,33 @@ import 'package:dart_sunvox/dart_sunvox.dart';
 import 'package:ml_2/widgets/widget.dart';
 
 import '../modifiers.dart';
-import '../pads.dart';
+import '../widgets/chromatic_keyboard.dart';
+import '../widgets/module_list.dart';
 import '../widgets/oled_listscreen.dart';
 import 'mode.dart';
+import 'play_note.dart';
 
 /// uses the "drum mode" button
 class ModuleMode implements DeviceMode {
   final WidgetContext _context;
   late final OledListScreenWidget _browserListWidget;
 
-  int _selectedModuleIndex = 0;
   int _controllerPage = 0;
   bool _browser = false;
 
-  SVModule? get _currentModule => _context.sunvox.getModule(_selectedModuleIndex);
+  final List<Widget> _children = [];
+
+  SVModule? get _currentModule => _context.sunvox.getModule(_context.currentModule?.id ?? 0);
 
   ModuleMode(this._context) {
-    _context.currentModule = _currentModule;
+    _children.add(
+      ChromaticKeyboard(
+        _context,
+        onNoteOn: (note, vel) => playNote(_context, note, vel),
+        onNoteOff: (note) => stopNote(_context, note),
+      ),
+    );
+    _children.add(ModuleList(_context));
     _browserListWidget = OledListScreenWidget(_context.screen, AllModulesListProvider(), _browserOnModuleSelected);
   }
 
@@ -45,9 +55,6 @@ class ModuleMode implements DeviceMode {
       }
       if (event.type == ButtonType.PatternDown) {
         _controllerPage = _controllerPage - 1;
-      }
-      if (event.type == ButtonType.Alt) {
-        
       }
      
     }
@@ -99,17 +106,16 @@ class ModuleMode implements DeviceMode {
 
   @override
   void onPad(PadEvent event, Modifiers mods) {
-    _selectedModuleIndex = (event.row * 16) + event.column;
-    _context.currentModule = _currentModule;
-
-    final module = _context.sunvox.getModule(_selectedModuleIndex);
-    log("pad[$_selectedModuleIndex] ${module?.name}");
-    _context.screen.drawContent([module?.name ?? "Un-named"], large: true);
+    for (final child in _children) {
+      child.onPad(event, mods);
+    }
   }
 
   @override
   void paint() {
-    _showModulesOnPads();
+    for (final child in _children) {
+      child.paint();
+    }
 
     // show browser mode on/off LED
     final ButtonLedColor browserButtonState = _browser ? ButtonLedColor.color1 : ButtonLedColor.off;
@@ -123,6 +129,8 @@ class ModuleMode implements DeviceMode {
     if (nuModule != null) {
       // for now just automatically connect to output module
       nuModule.connectToModule(0);
+      onFocus(); // TODO: temp hack to force module list to refresh modules list
+      _context.currentModule = nuModule;
     } else {
       throw Exception("could not create module $type");
     }
@@ -130,22 +138,13 @@ class ModuleMode implements DeviceMode {
     paint();
   }
 
-  void _showModulesOnPads() {
-    for (var i = 0; i < _context.sunvox.moduleSlotsCount; i++) {
-      final module = _context.sunvox.getModule(i);
-      if (module == null) {
-        continue;
-      }
-      //log("[$i] ${module.name} [${module.color}] inputs: ${module.inputs} outputs: ${module.outputs}");
-      final int row = i ~/ 16;
-      final int col = i % 16;
-      _context.sendMidi(colorPad(row, col, fromSVColor(module.color)));
-    }
-  }
-
   @override
   void onFocus() {
-    _showModulesOnPads();
+    log("step clear all pads");
+    _context.sendMidi(allPadOff);
+    for (final child in _children) {
+      child.onFocus();
+    }
   }
 }
 
