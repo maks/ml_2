@@ -1,5 +1,6 @@
 import 'package:bonsai/bonsai.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart';
+import 'package:ml_2/extensions.dart';
 
 import '../modifiers.dart';
 import '../pads.dart';
@@ -25,11 +26,16 @@ class ModuleList extends PadWidget {
     _context.currentModule = module;
     log("pad ${module?.name}");
     _context.screen.drawContent(["${module?.name}"], large: true);
-     
+
     if (event.direction == ButtonDirection.Down && mods.shift) {
       log("outputs:${module?.outputs.join(',')}");
       _context.clearAllPads();
       _showModulesOnPads(overrides: module?.outputs);
+      final outModId = module?.outputs[0];
+      if (outModId != null) {
+        final outModuleName = _context.sunvox.getModule(outModId)?.name;
+        _context.screen.drawContent(["${module?.name.truncate(8)} >", "$outModuleName"], large: true);
+      }
       return;
     } else if (event.direction == ButtonDirection.Up) {
       _showModulesOnPads();
