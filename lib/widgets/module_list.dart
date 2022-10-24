@@ -25,15 +25,26 @@ class ModuleList extends PadWidget {
     _context.currentModule = module;
     log("pad ${module?.name}");
     _context.screen.drawContent(["${module?.name}"], large: true);
+     
+    if (event.direction == ButtonDirection.Down && mods.shift) {
+      log("outputs:${module?.outputs.join(',')}");
+      _context.clearAllPads();
+      _showModulesOnPads(overrides: module?.outputs);
+      return;
+    } else if (event.direction == ButtonDirection.Up) {
+      _showModulesOnPads();
+    }
   }
 
   @override
   void onButton(ButtonEvent event, Modifiers mods) {
-    if (event.direction == ButtonDirection.Down && event.type == ButtonType.Select && mods.alt) {
-      print("DELETE === ${_context.currentModule?.name}");
-      _context.currentModule?.remove();
-      _context.clearAllPads(); //force module list update
-      _showModulesOnPads(); //force module list update
+    if (event.direction == ButtonDirection.Down) {
+      if (event.type == ButtonType.Select && mods.alt) {
+        log("DELETE === ${_context.currentModule?.name}");
+        _context.currentModule?.remove();
+        _context.clearAllPads(); //force module list update
+        _showModulesOnPads(); //force module list update
+      }
     }
   }
 
@@ -42,7 +53,7 @@ class ModuleList extends PadWidget {
     _showModulesOnPads();
   }
 
-  void _showModulesOnPads() {
+  void _showModulesOnPads({List<int>? overrides}) {
     int j = 0;
     for (var i = 0; i < _context.sunvox.moduleSlotsCount; i++) {
       final module = _context.sunvox.getModule(i);
@@ -59,7 +70,12 @@ class ModuleList extends PadWidget {
     for (final entry in instrumentModulesMap.entries) {
       final module = _context.sunvox.getModule(entry.value);
       if (module == null) {
-        print("skip null mod $i");
+        log("skip null mod $i");
+        i++;
+        continue;
+      }
+      if (overrides != null && !overrides.contains(i)) {
+        i++;
         continue;
       }
       final int row = i ~/ 16;
