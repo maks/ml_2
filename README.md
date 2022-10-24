@@ -24,9 +24,8 @@ R1: Modules & Playing
 
 R2: Project Management
 [ ] Go into project menu on Oled with Shift+Browser button
-[ ] Create new project (using project menu item)
-[ ] Rename current project (use pads as qwerty keybd)
-[ ] Load project
+[ ] Create new project (using project menu item), named "Project 1"," Project 2"," Project 3" etc
+[ ] Load project from list
 [ ] Set project BPM (using metronome button + select dial)
 
 R3: Visualisation & mixing
@@ -51,11 +50,41 @@ R3: Step Sequencing
 [ ] Add fx commands to steps
 [ ] Add new Sunvox Pattern (set of tracks) with Pattern down button (if next pattern does not yet exist)
 
+R4: Misc Improvements
+[ ] Rename current project (use pads as qwerty keybd)
 
-R4: Advanced Arrangement
+R5: Advanced Arrangement
 [ ] Arrange Patterns on Timeline (using arranger mode? alt mode of perform mode? aka "overview")
 [ ] Live record into a track (or multiple tracks if chords?)
 
+
+## Command reference
+
+### All Modes
+ 
+VOLUME:      global volume
+
+
+### Step Mode (STEP button)
+
+TODO
+
+### Module Mode (DRUM button)
+
+BROWSER:     toggle browsing mode to select module type to add (press SELECT to add)
+ALT+SELECT:  delete the currently selected module!
+SHIFT+Pad:   show the modules outputs
+GRID:        up/down 1 octave for pad chromatic keyboard
+
+PAN/FILTER/RESONANCE Encoders: Current module controllers in pages, page through with PATTERN buttons 
+
+### Note Mode (NOTE button)
+
+GRID:        up/down 1 octave for pad chromatic keyboard
+
+### Performance Mode (PERFORM button)
+
+TODO
 
 
 # References 
