@@ -131,6 +131,7 @@ class ModuleMode implements DeviceMode {
       nuModule.connectToModule(0);
       onFocus(); // TODO: temp hack to force module list to refresh modules list
       _context.currentModule = nuModule;
+      _browser = false; // leave browser mode after adding new module
     } else {
       throw Exception("could not create module $type");
     }
