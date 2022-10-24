@@ -16,8 +16,9 @@ R1: Modules & Playing
 [X] heading + large number widget for Oled
 [X] chromatic keyboard on pads for Note mode
 [ ] show connected output module pads while module pad pressed
-[ ] add/remove modules using Oled+select dial to choose new module to add
+[X] add/remove modules using Oled+select dial to choose new module to add
 [ ] connect/disconnect modules together using pads
+[ ] better module controllers change with encoders
 [ ] convert transport controls class to be a widget
 [ ] scales keyboard (C maj, dorian, etc)
 
