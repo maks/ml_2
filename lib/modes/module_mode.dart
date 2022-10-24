@@ -13,7 +13,7 @@ import 'play_note.dart';
 /// uses the "drum mode" button
 class ModuleMode implements DeviceMode {
   final WidgetContext _context;
-  late final OledListScreenWidget _browserListWidget;
+  
 
   int _controllerPage = 0;
   bool _browser = false;
@@ -31,25 +31,19 @@ class ModuleMode implements DeviceMode {
       ),
     );
     _children.add(ModuleList(_context));
-    _browserListWidget = OledListScreenWidget(_context.screen, AllModulesListProvider(), _browserOnModuleSelected);
   }
 
   @override
-  void onButton(ButtonEvent event, Modifiers mods) { 
+  void onButton(ButtonEvent event, Modifiers mods) {
+    final children = List<Widget>.from(_children);
+    for (final child in children) {
+      child.onButton(event, mods);
+    }
+
     if (event.direction == ButtonDirection.Down) {
       if (event.type == ButtonType.Browser) {
-        _browser = !_browser;
-        if (_browser) {
-          _browserListWidget.onFocus();
-        } else {
-          paint();
-        }
+        _toggleBrowserMode();
       }
-      if (_browser) {
-        _browserListWidget.onButton(event, mods);
-        return;
-      }
-
       if (event.type == ButtonType.PatternUp) {
         _controllerPage = _controllerPage + 1;
       }
@@ -63,9 +57,8 @@ class ModuleMode implements DeviceMode {
 
   @override
   void onDial(DialEvent event, Modifiers mods) {
-    if (_browser) {
-      _browserListWidget.onDial(event, mods);
-      return;
+    for (final child in _children) {
+      child.onDial(event, mods);
     }
 
     int dialIndex = 0;
@@ -116,10 +109,23 @@ class ModuleMode implements DeviceMode {
     for (final child in _children) {
       child.paint();
     }
-
+    
     // show browser mode on/off LED
-    final ButtonLedColor browserButtonState = _browser ? ButtonLedColor.color1 : ButtonLedColor.off;
-    _context.sendMidi(ButtonControls.buttonOn(ButtonCode.browser, browserButtonState.index));
+    final browserButtonLED = _browser ? ButtonLedColor.color1.index : ButtonLedColor.off.index;
+    _context.sendMidi(ButtonControls.buttonOn(ButtonCode.browser, browserButtonLED));
+  }
+
+  void _toggleBrowserMode() {
+    _browser = !_browser;
+    if (_browser) {
+      final browserListWidget = OledListScreenWidget(_context, AllModulesListProvider(), _browserOnModuleSelected);
+      _children.add(browserListWidget);
+      browserListWidget.onFocus();
+    } else {
+      _children.removeWhere((element) => element is OledListScreenWidget);
+      // TODO: for now manually clear oled screen here
+      _context.screen.clear();
+    }
   }
 
   void _browserOnModuleSelected(String type, void _) {
@@ -131,7 +137,7 @@ class ModuleMode implements DeviceMode {
       nuModule.connectToModule(0);
       onFocus(); // TODO: temp hack to force module list to refresh modules list
       _context.currentModule = nuModule;
-      _browser = false; // leave browser mode after adding new module
+      _toggleBrowserMode(); // leave browser mode after adding new module
     } else {
       throw Exception("could not create module $type");
     }
@@ -141,8 +147,6 @@ class ModuleMode implements DeviceMode {
 
   @override
   void onFocus() {
-    log("step clear all pads");
-    _context.sendMidi(allPadOff);
     for (final child in _children) {
       child.onFocus();
     }

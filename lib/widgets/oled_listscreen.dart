@@ -42,7 +42,7 @@ typedef OnItemSelected<T> = void Function(String name, T? data);
 class OledListScreenWidget extends OledWidget {
   static const viewPortSize = maxVisibleLines;
 
-  final OledScreen _screen;
+  final WidgetContext _context;
   final ListItemProvider _itemProvider;
   final List<ListScreenItem> _items = <ListScreenItem>[];
   final OnItemSelected _onSelected;
@@ -50,14 +50,12 @@ class OledListScreenWidget extends OledWidget {
   int _selectedIndex = 0;
   int get _viewportTopOffset => (_selectedIndex < viewPortSize ? 0 : _selectedIndex - (_selectedIndex % viewPortSize));
 
-  OledListScreenWidget(this._screen, this._itemProvider, this._onSelected);
+  OledListScreenWidget(this._context, this._itemProvider, this._onSelected);
 
   @override
   void onFocus() {
     if (_items.isEmpty) {
-      _fillViewport(); 
-    } else {
-      paint();
+      _fillViewport();
     }
   }
 
@@ -67,27 +65,28 @@ class OledListScreenWidget extends OledWidget {
       _prev(mods);
     } else if (event.direction == DialDirection.Right) {
       _next(mods);
-    } 
-    //TODO for now manually update
-    paint();
+    }
   }
 
   @override
   void onButton(ButtonEvent event, Modifiers mods) {
+    print("on Button");
     if (event.direction == ButtonDirection.Down) {
       if (event.type == ButtonType.Select) {
         _onSelected(_items[_selectedIndex].label, null);
-        paint();
       }
     }
   }
 
   @override
   void paint() {
+    // show browser mode on LED
+    _context.sendMidi(ButtonControls.buttonOn(ButtonCode.browser, ButtonLedColor.color1.index));
     final lines = _items.skip(_viewportTopOffset).take(viewPortSize).map((e) => e.label.truncate(10)).toList();
-    _screen.drawContent(lines, invertLines: {_selectedIndex % viewPortSize});
-    print("Paint: ${lines.join(',')} [$_selectedIndex] $_viewportTopOffset [${_items.length}]");
-  } 
+    _context.screen.clear();
+    _context.screen.drawContent(lines, invertLines: {_selectedIndex % viewPortSize});
+    print("paint lines: ${lines.join(',')} [$_selectedIndex] $_viewportTopOffset [${_items.length}]");
+  }
 
   // request all available items that are visible in viewport
   void _fillViewport() {
@@ -98,8 +97,6 @@ class OledListScreenWidget extends OledWidget {
       _items.insert(i, ListScreenItem<void>(nextItemName, null));
       nextItemName = _itemProvider.itemName(++i);
     }
-    //TODO for now manually call
-    paint();
   }
 
   void _next(Modifiers mods) {
@@ -111,13 +108,12 @@ class OledListScreenWidget extends OledWidget {
       }
     } else {
       _selectedIndex++;
-    }    
+    }
   }
 
   void _prev(Modifiers mods) {
     _selectedIndex = math.max(0, _selectedIndex - 1);
   }
-
 }
 
 class ListScreenItem<T> {

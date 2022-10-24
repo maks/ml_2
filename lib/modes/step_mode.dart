@@ -1,4 +1,3 @@
-import 'package:bonsai/bonsai.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart';
 
 import '../modifiers.dart';
@@ -32,7 +31,5 @@ class StepMode implements DeviceMode {
 
   @override
   void onFocus() {
-    log("step clear all pads");
-    _context.sendMidi(allPadOff);
   }
 }

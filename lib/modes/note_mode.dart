@@ -1,4 +1,3 @@
-import 'package:bonsai/bonsai.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart';
 import 'package:ml_2/widgets/chromatic_keyboard.dart';
 import 'package:ml_2/widgets/module_list.dart';
@@ -51,12 +50,8 @@ class NoteMode implements DeviceMode {
 
   @override
   void onFocus() {
-    log("step clear all pads");
-    _context.sendMidi(allPadOff);
     for (final child in _children) {
       child.onFocus();
     }
   }
-
-
 }

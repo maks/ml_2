@@ -32,4 +32,6 @@ class WidgetContext {
   WidgetContext(this.container, this._midiDevice, this.screen, this.sunvox);
 
   void sendMidi(Uint8List midiData) => _midiDevice.send(midiData);
+
+  void clearAllPads() => _midiDevice.send(allPadOff); // clear pads on each change of top-level mode
 }

@@ -28,6 +28,16 @@ class ModuleList extends PadWidget {
   }
 
   @override
+  void onButton(ButtonEvent event, Modifiers mods) {
+    if (event.direction == ButtonDirection.Down && event.type == ButtonType.Select && mods.alt) {
+      print("DELETE === ${_context.currentModule?.name}");
+      _context.currentModule?.remove();
+      _context.clearAllPads(); //force module list update
+      _showModulesOnPads(); //force module list update
+    }
+  }
+
+  @override
   void onFocus() {
     _showModulesOnPads();
   }
@@ -49,6 +59,7 @@ class ModuleList extends PadWidget {
     for (final entry in instrumentModulesMap.entries) {
       final module = _context.sunvox.getModule(entry.value);
       if (module == null) {
+        print("skip null mod $i");
         continue;
       }
       final int row = i ~/ 16;

@@ -31,9 +31,16 @@ class ML2 {
 
   DeviceMode get currentMode => modes[_currentModeIndex];
 
+  set _setCurrentMode(int modeIndex) {
+    _currentModeIndex = modeIndex;
+    _context.clearAllPads();
+    currentMode.onFocus();
+  }
+
   Modifiers _modifiers = Modifiers.allOff();
   late final TransportControls _transportControls;
   late final OledScreen _screen;
+  late final WidgetContext _context;
 
   ML2(this._container);
 
@@ -43,11 +50,10 @@ class ML2 {
 
     fireInit();
 
-    final context = WidgetContext(_container, _midiDevice, _screen, _sunvox);
+    _context = WidgetContext(_container, _midiDevice, _screen, _sunvox);
 
-    modes = [StepMode(context), NoteMode(context), ModuleMode(context), PerformMode(context)];
+    modes = [StepMode(_context), NoteMode(_context), ModuleMode(_context), PerformMode(_context)];
   }
-
 
   void playPause() {
     log("Play-Pause!");
@@ -109,7 +115,7 @@ class ML2 {
     midiDev.send(fire.colorPad(0, 0, fire.PadColor(10, 10, 70)));
 
     // listen for all incoming midi messages from the Fire
-    midiDev.receivedMessages.listen((event) {     
+    midiDev.receivedMessages.listen((event) {
       _handleInput(FireInputEvent.fromMidi(event.data));
     });
 
@@ -121,6 +127,7 @@ class ML2 {
 
   void _handleInput(FireInputEvent event) {
     //log("handleInput event: $event");
+    bool isModifier = false;
     if (event is ButtonEvent && event is! PadEvent) {
       if (event.direction == ButtonDirection.Down) {
         switch (event.type) {
@@ -161,27 +168,25 @@ class ML2 {
             // TODO: Handle this case.
             break;
           case ButtonType.Step:
-            _currentModeIndex = 0;
-            currentMode.onFocus();
+            _setCurrentMode = 0;
             break;
           case ButtonType.Note:
-            _currentModeIndex = 1;
-            currentMode.onFocus();
+            _setCurrentMode = 1;
             break;
           case ButtonType.Drum:
-            _currentModeIndex = 2;
-            currentMode.onFocus();
+            _setCurrentMode = 2;
             break;
           case ButtonType.Perform:
-            _currentModeIndex = 3;
-            currentMode.onFocus();
+            _setCurrentMode = 3;
             break;
           case ButtonType.Shift:
-            _modifiers = _modifiers.copyWith(shift: false);
+            _modifiers = _modifiers.copyWith(shift: true);
+            isModifier = true;
             _midiDevice.send(ButtonControls.buttonOn(ButtonCode.shift, 1));
             break;
           case ButtonType.Alt:
             _modifiers = _modifiers.copyWith(alt: true);
+            isModifier = true;
             _midiDevice.send(ButtonControls.buttonOn(ButtonCode.alt, 1));
             break;
           case ButtonType.Pattern:
@@ -213,19 +218,23 @@ class ML2 {
         switch (event.type) {
           case ButtonType.Shift:
             _modifiers = _modifiers.copyWith(shift: false);
+            isModifier = true;
             _midiDevice.send(ButtonControls.buttonOff(ButtonCode.shift));
             break;
           case ButtonType.Alt:
             _modifiers = _modifiers.copyWith(alt: false);
+            isModifier = true;
             _midiDevice.send(ButtonControls.buttonOff(ButtonCode.alt));
             break;
           default: //NA
             break;
         }
       }
-      currentMode.onButton(event, _modifiers);
+      if (!isModifier) {
+        currentMode.onButton(event, _modifiers);
+      }
     }
-    if (event is PadEvent) {      
+    if (event is PadEvent) {
       currentMode.onPad(event, _modifiers);
     }
     if (event is DialEvent) {
@@ -238,7 +247,6 @@ class ML2 {
       } else {
         currentMode.onDial(event, _modifiers);
       }
-      
     }
     //TODO: need to call on timer, but for now just call only after events
     _updateUI();
@@ -248,7 +256,7 @@ class ML2 {
     for (final b in [ButtonCode.step, ButtonCode.note, ButtonCode.drum, ButtonCode.perform]) {
       _midiDevice.send(ButtonControls.buttonOn(b, 0));
     }
-    log("update ui: $currentMode");
+    log("update ui: ${currentMode.runtimeType}");
     switch (currentMode.runtimeType) {
       case StepMode:
         _midiDevice.send(ButtonControls.buttonOn(ButtonCode.step, 1));
