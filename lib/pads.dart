@@ -11,3 +11,5 @@ PadColor dim(PadColor color, int dimBy) {
   final int b = (color.b * dimBy).floor();
   return PadColor(r, g, b);
 }
+
+int padIndexFrom(int column, int row) => column + (row * 16);

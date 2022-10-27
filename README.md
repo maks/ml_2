@@ -17,7 +17,7 @@ R1: Modules & Playing
 [X] chromatic keyboard on pads for Note mode
 [X] show connected output module pads while module pad (+shift) pressed
 [X] add/remove modules using Oled+select dial to choose new module to add
-[ ] connect/disconnect modules together using pads
+[X] connect/disconnect modules together using pads
 [ ] better module controllers change with encoders
 [ ] convert transport controls class to be a widget
 [ ] scales keyboard (C maj, dorian, etc)
@@ -78,6 +78,10 @@ SHIFT+Pad:   show the modules outputs
 GRID:        up/down 1 octave for pad chromatic keyboard
 
 PAN/FILTER/RESONANCE Encoders: Current module controllers in pages, page through with PATTERN buttons 
+
+#### Inter-Module connections
+While holding down a Pad, tap another pad to connect from first to second pad. Or disconnect first from second pad
+if they were previously connected.
 
 ### Note Mode (NOTE button)
 
