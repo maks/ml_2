@@ -15,12 +15,13 @@ R1: Modules & Playing
 [ ] show names of controls when switching controller "pages"
 [X] heading + large number widget for Oled
 [X] chromatic keyboard on pads for Note mode
-[ ] show connected output module pads while module pad pressed
+[X] show connected output module pads while module pad (+shift) pressed
 [X] add/remove modules using Oled+select dial to choose new module to add
 [ ] connect/disconnect modules together using pads
 [ ] better module controllers change with encoders
 [ ] convert transport controls class to be a widget
 [ ] scales keyboard (C maj, dorian, etc)
+[ ] editing of complex module controls: eg. envelopes 
 
 R2: Project Management
 [ ] Go into project menu on Oled with Shift+Browser button
