@@ -13,12 +13,13 @@ import 'play_note.dart';
 /// uses the "drum mode" button
 class ModuleMode implements DeviceMode {
   final WidgetContext _context;
-  
+  final List<Widget> _children = [];
 
   int _controllerPage = 0;
   bool _browser = false;
 
-  final List<Widget> _children = [];
+  int dialDebounce = 0;
+  DialDirection? dialDebounceDir;
 
   SVModule? get _currentModule => _context.sunvox.getModule(_context.currentModule?.id ?? 0);
 
@@ -50,7 +51,6 @@ class ModuleMode implements DeviceMode {
       if (event.type == ButtonType.PatternDown) {
         _controllerPage = _controllerPage - 1;
       }
-     
     }
     log("controller page: $_controllerPage");
   }
@@ -84,14 +84,25 @@ class ModuleMode implements DeviceMode {
     }
     if (event.direction == DialDirection.TouchOn) {
       // na just update screen at end of method
+      dialDebounce = 0;
     }
 
-    if (event.direction == DialDirection.Left || event.direction == DialDirection.Right) {     
-      (event.direction == DialDirection.Left) ? controller.dec(event.velocity) : controller.inc(event.velocity);
-      final modId = _currentModule?.id;
-      if (modId == null) {
-        log("missing module id for controller value set");
-        return;
+    if (event.direction == DialDirection.Left || event.direction == DialDirection.Right) {
+      dialDebounceDir ??= event.direction;
+      if (dialDebounceDir != event.direction) {
+        dialDebounce = 0; //reset debounce
+        dialDebounceDir = event.direction;
+      }
+      dialDebounce++;
+      if (dialDebounce > 3) {
+        dialDebounce = 0; //reset debounce
+
+        (event.direction == DialDirection.Left) ? controller.dec(event.velocity) : controller.inc(event.velocity);
+        final modId = _currentModule?.id;
+        if (modId == null) {
+          log("missing module id for controller value set");
+          return;
+        }
       }
     }
     _context.screen.drawContent([controller.name, "${controller.displayValue ?? controller.value}"], large: true);
@@ -109,7 +120,7 @@ class ModuleMode implements DeviceMode {
     for (final child in _children) {
       child.paint();
     }
-    
+
     // show browser mode on/off LED
     final browserButtonLED = _browser ? ButtonLedColor.color1.index : ButtonLedColor.off.index;
     _context.sendMidi(ButtonControls.buttonOn(ButtonCode.browser, browserButtonLED));
