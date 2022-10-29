@@ -34,10 +34,12 @@ class ModuleList extends PadWidget {
         log("outputs:${module?.outputs.join(',')}");
         _context.clearAllPads();
         _showModulesOnPads(overrides: module?.outputs);
-        final outModId = module?.outputs[0];
-        if (outModId != null) {
-          final outModuleName = _context.sunvox.getModule(outModId)?.name;
-          _context.screen.drawContent(["${module?.name.truncate(8)} >", "$outModuleName"], large: true);
+
+        final outModNames = module?.outputs.map((e) => _context.sunvox.getModule(e)?.name).whereType<String>().toList();
+
+        if (outModNames != null) {
+          // TODO: for now only show 2 because only 2 fit in large Font mode
+          _context.screen.drawContent(["${module?.name.truncate(8)} >", ...outModNames.take(2)], large: true);
         }
         return;
       }
