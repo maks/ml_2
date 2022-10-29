@@ -74,17 +74,17 @@ packages:
   dart_fire_midi:
     dependency: "direct main"
     description:
-      path: "../dart_fire_midi"
-      relative: true
-    source: path
-    version: "0.2.0"
+      name: dart_fire_midi
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0"
   dart_sunvox:
     dependency: "direct main"
     description:
-      path: "../dart_sunvox"
-      relative: true
-    source: path
-    version: "0.0.2"
+      name: dart_sunvox
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.3"
   ffi:
     dependency: transitive
     description:
