@@ -1,5 +1,6 @@
 import 'package:bonsai/bonsai.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart';
+import 'package:ml_2/sequencer/pattern.dart';
 
 import '../modifiers.dart';
 import '../widgets/widget.dart';
@@ -22,16 +23,18 @@ class StepMode implements DeviceMode {
 
   @override
   void onPad(PadEvent event, Modifiers mods) {
+    if (event.direction == ButtonDirection.Up) {
+      return;
+    }
     final pCount = _context.sunvox.patternCount;
-    log("step pad - patterns: $pCount");
-    for (int i = 0; i < 1; i++) {
+    final List<SqPattern> patterns = [];
+    for (int i = 0; i < pCount; i++) {
       final pat = _context.sunvox.getPattern(i);
-      log("Pat [${pat?.id}] ${pat?.name}, track count: ${pat?.patternTrackCount} lines: ${pat?.patternLineCount}");
-      log("Pat Data:\n${pat?.data.join('\n')}");
-      // final note = pat?.data.first.events[3].note;
-      // final noteStr = Pitch.fromMidiNumber(note ?? 0); //.toString().replaceAll("♯", "#");
-      // log("note:$noteStr");
-    }    
+      if (pat != null) {
+        patterns.add(SqPattern.fromSunvox(pat));
+      }      
+    }
+    print("Pattern first note: ${patterns.first.tracks.first.steps.first.noteAsString}");    
   }
 
   @override
