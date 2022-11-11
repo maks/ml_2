@@ -39,7 +39,7 @@ class ModuleList extends PadWidget {
 
         if (outModNames != null) {
           // TODO: for now only show 2 because only 2 fit in large Font mode
-          _context.screen.drawContent(["${module?.name.truncate(8)} >", ...outModNames.take(2)], large: true);
+          _context.screen.drawContent(["${module?.name?.truncate(8)} >", ...outModNames.take(2)], large: true);
         }
         return;
       }

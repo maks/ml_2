@@ -81,9 +81,9 @@ packages:
   dart_sunvox:
     dependency: "direct main"
     description:
-      name: dart_sunvox
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../dart_sunvox"
+      relative: true
+    source: path
     version: "0.0.4"
   ffi:
     dependency: transitive

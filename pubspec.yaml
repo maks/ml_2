@@ -12,8 +12,8 @@ dependencies:
   collection: ^1.16.0
   dart_fire_midi: 0.3.0
     #path: ../dart_fire_midi
-  dart_sunvox: 0.0.4
-    # path: ../dart_sunvox
+  dart_sunvox: #0.0.4
+    path: ../dart_sunvox
   midi: ^0.0.5
   riverpod: ^1.0.3+1
   monochrome_draw: ^1.1.1
