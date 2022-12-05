@@ -5,33 +5,9 @@ import 'package:ml_2/widgets/widget.dart';
 import 'dart:math' as math;
 
 import '../oled/screen.dart';
+import 'oled_widget.dart';
 
-class OledWidget implements Widget {
-  @override
-  void onButton(ButtonEvent event, Modifiers mods) {
-    // TODO: implement onButton
-  }
 
-  @override
-  void onDial(DialEvent event, Modifiers mods) {
-    // TODO: implement onDial
-  }
-
-  @override
-  void onFocus() {
-    // TODO: implement onFocus
-  }
-
-  @override
-  void onPad(PadEvent event, Modifiers mods) {
-    // TODO: implement onPad
-  }
-
-  @override
-  void paint() {
-    // TODO: implement paint
-  }
-}
 
 abstract class ListItemProvider {
   String? itemName(int index);

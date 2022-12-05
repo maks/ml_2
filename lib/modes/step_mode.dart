@@ -1,4 +1,3 @@
-import 'package:bonsai/bonsai.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart';
 import 'package:ml_2/sequencer/pattern.dart';
 
