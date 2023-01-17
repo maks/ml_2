@@ -3,9 +3,9 @@
 Second generation of Akai Fire based "groovebox", now using Sunvox as the audio "backend".
 
 
-## Preview Demo
+## Preview Demo Video
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/JpadEkXXo2E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+[![Video previewing current ML-2 status](https://img.youtube.com/vi/JpadEkXXo2E/0.jpg)](https://www.youtube.com/watch?v=JpadEkXXo2E)
 
 ## Todo
 
