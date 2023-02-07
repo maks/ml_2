@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bonsai/bonsai.dart' as bonsai;
 import 'package:ml_2/ml_2.dart';
+import 'package:ml_2/providers.dart';
 import 'package:riverpod/riverpod.dart';
 
 void main(List<String> arguments) async {
@@ -11,7 +12,9 @@ void main(List<String> arguments) async {
     bonsai.Log.i("Main", "initialised ML-2 logging");
   }  
 
-  final container = ProviderContainer();
+  final container = ProviderContainer(overrides: [
+    projectFileNameProvider.overrideWithValue(arguments[0]),
+  ]);
 
   final ml2 = ML2(container);
   await ml2.init();
