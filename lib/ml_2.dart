@@ -28,7 +28,6 @@ class ML2 {
   late final Timer _ticker;
   int _currentModeIndex = 0;
   List<DeviceMode> modes = [];
-  int _lastLine = 0;
   bool _dirty = false;
 
   final _volume = Volume(64); // init to 25%
@@ -88,7 +87,6 @@ class ML2 {
       _transportControls.idle();
     } else {
       _transportControls.stop();
-      _lastLine = 0;
     }
   }
 
@@ -119,7 +117,7 @@ class ML2 {
       print("Connected to Akai Fire device !");
     }
 
-    _transportControls = TransportControls();
+    _transportControls = _container.read(transportControlsProvider.notifier);
 
     midiDev.send(fire.allOffMessage);
     log('init: all off');
@@ -266,11 +264,9 @@ class ML2 {
 
   void _tick() {
     if (_transportControls.isPlaying) {
-      final line = _sunvox.currentLine;
-      if (_lastLine != line) {
-        _lastLine = line;
-        print("line:$_lastLine");
-        // _dirty = true;
+      final r = _transportControls.updateLine(_sunvox.currentLine);
+      if (r) {
+        _dirty = true;
       }
     }
     if (_dirty) {

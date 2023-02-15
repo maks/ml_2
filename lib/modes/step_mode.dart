@@ -1,5 +1,6 @@
 import 'package:dart_fire_midi/dart_fire_midi.dart';
 import 'package:ml_2/extensions.dart';
+import 'package:ml_2/providers.dart';
 import 'package:ml_2/sequencer/pattern.dart';
 
 import '../modifiers.dart';
@@ -52,7 +53,11 @@ class StepMode implements DeviceMode {
   @override
   void paint() {
     _context.screen.drawContent([_pressedStepNote], large: true);
-    _paintPadSteps();
+    
+    final pat = _context.sunvox.getPattern(0); //TODO: hardcoded 1st pattern for now
+    final line = _context.container.read(transportControlsProvider).line % (pat?.patternLineCount ?? 1);
+
+    _paintPadSteps(line);
   }
 
   @override
@@ -73,7 +78,7 @@ class StepMode implements DeviceMode {
     return patterns;
   }
 
-  void _paintPadSteps() {
+  void _paintPadSteps(int line) {
     _context.sendMidi(allPadOff);
 
     final patterns = _getPatterns();
@@ -83,8 +88,9 @@ class StepMode implements DeviceMode {
       final track = pattern.tracks[t];
       for (int s = 0; s < 16; s++) {
         final step = track.steps[s];
+        final color = line == s ? PadColor(0, 0, 50) : PadColor(step.note, step.note, step.note);
         if (step.note > 11) {
-          _context.sendMidi(colorPad(t, s, PadColor(step.note, step.note, step.note)));
+          _context.sendMidi(colorPad(t, s, color));
         }
       }
     }
