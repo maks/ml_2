@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bonsai/bonsai.dart';
@@ -24,8 +25,11 @@ class ML2 {
   final ProviderContainer _container;
   late final LibSunvox _sunvox;
   late final AlsaMidiDevice _midiDevice;
+  late final Timer _ticker;
   int _currentModeIndex = 0;
   List<DeviceMode> modes = [];
+  int _lastLine = 0;
+  bool _dirty = false;
 
   final _volume = Volume(64); // init to 25%
 
@@ -53,14 +57,22 @@ class ML2 {
     _context = WidgetContext(_container, _midiDevice, _screen, _sunvox);
 
     modes = [StepMode(_context), NoteMode(_context), ModuleMode(_context), PerformMode(_context)];
+
+    // lets go for 30fps (32ms ticker)
+    _ticker = Timer.periodic(Duration(milliseconds: 32), (timer) {
+      if (timer.isActive) {
+        _tick();
+      }
+    });
+    print("ticking===");
   }
 
   void playPause() {
     log("Play-Pause!");
-    if (_transportControls.state == TransportState.playing) {
+    if (_transportControls.isPlaying) {
       _sunvox.pause();
       _transportControls.pause();
-    } else if (_transportControls.state == TransportState.paused) {
+    } else if (_transportControls.isPaused) {
       _sunvox.resume();
       _transportControls.play();
     } else {
@@ -72,10 +84,11 @@ class ML2 {
   void stop() {
     log("Stop!");
     _sunvox.stop();
-    if (_transportControls.state == TransportState.stopped) {
+    if (_transportControls.isStopped) {
       _transportControls.idle();
     } else {
       _transportControls.stop();
+      _lastLine = 0;
     }
   }
 
@@ -122,7 +135,7 @@ class ML2 {
     // initial state update
     log('init: update ui');
     _screen.drawContent(["ML-2 :-)"], large: true);
-    _updateUI();
+    //_updateUI();
   }
 
   void _handleInput(FireInputEvent event) {
@@ -248,15 +261,29 @@ class ML2 {
         currentMode.onDial(event, _modifiers);
       }
     }
-    //TODO: need to call on timer, but for now just call only after events
+    _dirty = true;
+  }
+
+  void _tick() {
+    if (_transportControls.isPlaying) {
+      final line = _sunvox.currentLine;
+      if (_lastLine != line) {
+        _lastLine = line;
+        print("line:$_lastLine");
+        // _dirty = true;
+      }
+    }
+    if (_dirty) {
     _updateUI();
+      _dirty = false;
+    }
   }
 
   void _updateUI() {
     for (final b in [ButtonCode.step, ButtonCode.note, ButtonCode.drum, ButtonCode.perform]) {
       _midiDevice.send(ButtonControls.buttonOn(b, 0));
     }
-    log("update ui: ${currentMode.runtimeType}");
+    // log("update ui: ${currentMode.runtimeType}");
     switch (currentMode.runtimeType) {
       case StepMode:
         _midiDevice.send(ButtonControls.buttonOn(ButtonCode.step, 1));

@@ -1,31 +1,31 @@
 import 'package:dart_fire_midi/dart_fire_midi.dart';
 import 'package:midi/midi.dart';
+import 'package:riverpod/riverpod.dart';
 
 enum TransportState { idle, playing, paused, stopped, recording }
 
-class TransportControls {
-  
-  TransportState _transportState = TransportState.idle;
+class TransportControls extends StateNotifier<TransportState> {
+  TransportControls() : super(TransportState.idle);
 
-  TransportState get state => _transportState;
+  void idle() => state = TransportState.idle;
 
-  TransportControls() {
-    idle();
-  }
+  void play() => state = TransportState.playing;
 
-  void idle() => _transportState = TransportState.idle;
+  void pause() => state = TransportState.paused;
 
-  void play() => _transportState = TransportState.playing;
+  void stop() => state = TransportState.stopped;
 
-  void pause() => _transportState = TransportState.paused;
+  void record() => state = TransportState.recording;
 
-  void stop() => _transportState = TransportState.stopped;
+  bool get isPlaying => state == TransportState.playing;
 
-  void record() => _transportState = TransportState.recording;
+  bool get isPaused => state == TransportState.paused; 
+
+  bool get isStopped => state == TransportState.stopped; 
 
   void update(final AlsaMidiDevice midiDevice) {
     _allOff(midiDevice);
-    switch (_transportState) {
+    switch (state) {
       case TransportState.idle:
         midiDevice.send(ButtonControls.buttonOn(ButtonCode.stop, ButtonLedColor.color1.index));
         break;

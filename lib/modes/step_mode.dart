@@ -51,7 +51,6 @@ class StepMode implements DeviceMode {
 
   @override
   void paint() {
-    print("step mode paint()");
     _context.screen.drawContent([_pressedStepNote], large: true);
     _paintPadSteps();
   }
@@ -68,8 +67,8 @@ class StepMode implements DeviceMode {
         patterns.add(SqPattern.fromSunvox(pat));
       }
     }
-    print("read sunvox patterns:\n ${patterns.length}");
-    print("Pattern 1:\n${patterns.first}");
+    // print("read sunvox patterns:\n ${patterns.length}");
+    // print("Pattern 1:\n${patterns.first}");
    
     return patterns;
   }
