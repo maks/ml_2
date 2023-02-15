@@ -53,6 +53,7 @@ class StepMode implements DeviceMode {
   void paint() {
     print("step mode paint()");
     _context.screen.drawContent([_pressedStepNote], large: true);
+    _paintPadSteps();
   }
 
   @override
@@ -67,9 +68,26 @@ class StepMode implements DeviceMode {
         patterns.add(SqPattern.fromSunvox(pat));
       }
     }
-    print("read sunvox patterns:\n $patterns");
-    //print("Pattern first note: ${patterns.first.tracks.first.steps.first.noteAsString}");
+    print("read sunvox patterns:\n ${patterns.length}");
+    print("Pattern 1:\n${patterns.first}");
    
     return patterns;
+  }
+
+  void _paintPadSteps() {
+    _context.sendMidi(allPadOff);
+
+    final patterns = _getPatterns();
+    final pattern = patterns.first; //TODO: use selected pattern
+
+    for (var t = 0; t < pattern.tracks.length; t++) {
+      final track = pattern.tracks[t];
+      for (int s = 0; s < 16; s++) {
+        final step = track.steps[s];
+        if (step.note > 11) {
+          _context.sendMidi(colorPad(t, s, PadColor(step.note, step.note, step.note)));
+        }
+      }
+    }
   }
 }

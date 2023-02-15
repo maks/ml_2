@@ -4,7 +4,6 @@ import 'package:tonic/tonic.dart';
 /// Sequencer Data models
 /// This is intended to provide a bit of abstraction away from the raw Sunvox data structure classes
 /// coming from Sunvox package
-
 class SqPattern {
   final List<SqTrack> tracks;
 
@@ -21,12 +20,22 @@ class SqPattern {
     }
     return SqPattern(tracks);
   }
+
+  @override
+  String toString() {
+    return tracks.join("\n");
+  }
 }
 
 class SqTrack {
   final List<SqStep> steps;
 
   SqTrack(this.steps);
+
+  @override
+  String toString() {
+    return steps.join(" ");
+  }
 }
 
 class SqStep {
@@ -36,7 +45,7 @@ class SqStep {
   final int controller;
   final int controllerValue;
 
-  String get noteAsString => Pitch.fromMidiNumber(note).toString().replaceAll("♯", "#");
+  String get noteAsString => note < 12 ? "--" : Pitch.fromMidiNumber(note).toString().replaceAll("♯", "#");
 
   SqStep({
     required this.note,
@@ -53,4 +62,9 @@ class SqStep {
         controller: svEvent.controller,
         controllerValue: svEvent.controllerValue,
       );
+
+  @override
+  String toString() {
+    return noteAsString;
+  }    
 }
