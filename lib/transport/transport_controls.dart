@@ -44,9 +44,9 @@ class TransportState {
 }
 
 
-class TransportControls extends StateNotifier<TransportState> {
+class TransportControl extends StateNotifier<TransportState> {
 
-  TransportControls() : super(TransportState.idle());
+  TransportControl() : super(TransportState.idle());
 
   void idle() => state = TransportState.idle();
 

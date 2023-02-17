@@ -8,7 +8,8 @@ import 'package:midi/midi.dart';
 import 'package:collection/collection.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart' as fire;
 import 'package:ml_2/modes/mode.dart';
-import 'package:ml_2/transport_controls.dart';
+import 'package:ml_2/transport/transport_control_widget.dart';
+import 'package:ml_2/transport/transport_controls.dart';
 import 'package:ml_2/widgets/widget.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -32,6 +33,8 @@ class ML2 {
 
   final _volume = Volume(64); // init to 25%
 
+  late final TransportControlWidget _transportControlWidget;
+
   DeviceMode get currentMode => modes[_currentModeIndex];
 
   set _setCurrentMode(int modeIndex) {
@@ -41,7 +44,7 @@ class ML2 {
   }
 
   Modifiers _modifiers = Modifiers.allOff();
-  late final TransportControls _transportControls;
+  late final TransportControl _transportControls;
   late final OledScreen _screen;
   late final WidgetContext _context;
 
@@ -57,44 +60,16 @@ class ML2 {
 
     modes = [StepMode(_context), NoteMode(_context), ModuleMode(_context), PerformMode(_context)];
 
+    _transportControlWidget = TransportControlWidget(_context);
+
     // lets go for 30fps (32ms ticker)
     _ticker = Timer.periodic(Duration(milliseconds: 32), (timer) {
       if (timer.isActive) {
         _tick();
       }
     });
-    print("ticking===");
   }
 
-  void playPause() {
-    log("Play-Pause!");
-    if (_transportControls.isPlaying) {
-      _sunvox.pause();
-      _transportControls.pause();
-    } else if (_transportControls.isPaused) {
-      _sunvox.resume();
-      _transportControls.play();
-    } else {
-      _sunvox.playFromStart();
-      _transportControls.play();
-    }
-  }
-
-  void stop() {
-    log("Stop!");
-    _sunvox.stop();
-    if (_transportControls.isStopped) {
-      _transportControls.idle();
-    } else {
-      _transportControls.stop();
-    }
-  }
-
-  void record() {
-    log("Record!");
-    // _sunvox.record();
-    _transportControls.record();
-  }
 
   Future<void> fireInit() async {
     final midiDevices = AlsaMidiDevice.getDevices();
@@ -114,7 +89,7 @@ class ML2 {
       log('failed to connect to Akai Fire device');
       return;
     } else {
-      print("Connected to Akai Fire device !");
+      log("Connected to Akai Fire device !");
     }
 
     _transportControls = _container.read(transportControlsProvider.notifier);
@@ -141,43 +116,8 @@ class ML2 {
     bool isModifier = false;
     if (event is ButtonEvent && event is! PadEvent) {
       if (event.direction == ButtonDirection.Down) {
+        //TODO: move this into Modes widget
         switch (event.type) {
-          case ButtonType.Play:
-            playPause();
-            break;
-          case ButtonType.Stop:
-            stop();
-            break;
-          case ButtonType.PatternUp:
-            // TODO: Handle this case.
-            break;
-          case ButtonType.PatternDown:
-            // TODO: Handle this case.
-            break;
-          case ButtonType.Browser:
-            // TODO: Handle this case.
-            break;
-          case ButtonType.GridLeft:
-            // TODO: Handle this case.
-            break;
-          case ButtonType.GridRight:
-            // TODO: Handle this case.
-            break;
-          case ButtonType.BankSelect:
-            // TODO: Handle this case.
-            break;
-          case ButtonType.MuteButton1:
-            // TODO: Handle this case.
-            break;
-          case ButtonType.MuteButton2:
-            // TODO: Handle this case.
-            break;
-          case ButtonType.MuteButton3:
-            // TODO: Handle this case.
-            break;
-          case ButtonType.MuteButton4:
-            // TODO: Handle this case.
-            break;
           case ButtonType.Step:
             _setCurrentMode = 0;
             break;
@@ -199,30 +139,8 @@ class ML2 {
             _modifiers = _modifiers.copyWith(alt: true);
             isModifier = true;
             _midiDevice.send(ButtonControls.buttonOn(ButtonCode.alt, 1));
-            break;
-          case ButtonType.Pattern:
-            // TODO: Handle this case.
-            break;
-          case ButtonType.Record:
-            record();
-            break;
-          case ButtonType.Volume:
-            // TODO: Handle this case.
-            break;
-          case ButtonType.Pan:
-            // TODO: Handle this case.
-            break;
-          case ButtonType.Filter:
-            // TODO: Handle this case.
-            break;
-          case ButtonType.Resonance:
-            // TODO: Handle this case.
-            break;
-          case ButtonType.Select:
-            // TODO: Handle this case.
-            break;
-          case ButtonType.Pad:
-            // TODO: Handle this case.
+            break;          
+          default:
             break;
         }
       } else {
@@ -241,6 +159,9 @@ class ML2 {
             break;
         }
       }
+      // always give the transport control widget chance to handle the button events irrespective of the mode we're in
+      _transportControlWidget.onButton(event, _modifiers);
+
       if (!isModifier) {
         currentMode.onButton(event, _modifiers);
       }
@@ -311,6 +232,7 @@ class ML2 {
     _midiDevice.send(fire.sendBitmap(_screen.bitmapData));
     _midiDevice.send(allOffMessage);
     _sunvox.shutDown();
+    _ticker.cancel();
     sleep(Duration(milliseconds: 500)); //short wait for all off mesg before disconnecting midi
     _midiDevice.disconnect();
     log("midi device disconnected");
