@@ -1,3 +1,4 @@
+import 'package:bonsai/bonsai.dart';
 import 'package:ml_2/extensions.dart';
 import 'package:ml_2/modifiers.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart';
@@ -46,7 +47,6 @@ class OledListScreenWidget extends OledWidget {
 
   @override
   void onButton(ButtonEvent event, Modifiers mods) {
-    print("on Button");
     if (event.direction == ButtonDirection.Down) {
       if (event.type == ButtonType.Select) {
         _onSelected(_items[_selectedIndex].label, null);
@@ -61,7 +61,7 @@ class OledListScreenWidget extends OledWidget {
     final lines = _items.skip(_viewportTopOffset).take(viewPortSize).map((e) => e.label.truncate(10)).toList();
     _context.screen.clear();
     _context.screen.drawContent(lines, invertLines: {_selectedIndex % viewPortSize});
-    print("paint lines: ${lines.join(',')} [$_selectedIndex] $_viewportTopOffset [${_items.length}]");
+    log("paint lines: ${lines.join(',')} [$_selectedIndex] $_viewportTopOffset [${_items.length}]");
   }
 
   // request all available items that are visible in viewport

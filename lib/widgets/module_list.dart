@@ -53,10 +53,10 @@ class ModuleList extends PadWidget {
         if (activePadIndex != null && activePadIndex != eventPadIndex) {
           final activeModule = _context.sunvox.getModule(activePadIndex!);
           if (activeModule?.outputs.contains(eventPadIndex) ?? false) {
-            print("DISCONNECT: ${activeModule?.name} -> $eventPadIndex");
+            log("DISCONNECT: ${activeModule?.name} -> $eventPadIndex");
             activeModule?.disconnectFromModule(eventPadIndex);
           } else {
-            print("CONNECT: ${activeModule?.name} -> $eventPadIndex");
+            log("CONNECT: ${activeModule?.name} -> $eventPadIndex");
             activeModule?.connectToModule(eventPadIndex);
           }
         } else {

@@ -1,3 +1,4 @@
+import 'package:bonsai/bonsai.dart';
 import 'package:dart_fire_midi/dart_fire_midi.dart';
 import 'package:ml_2/extensions.dart';
 import 'package:ml_2/providers.dart';
@@ -25,7 +26,7 @@ class StepMode implements DeviceMode {
       if (event.type == ButtonType.GridRight) {
         _page = _page.increment((_patternLength % 16) + 1);
       }
-      print("page: $_page");
+      log("page: $_page");
     }
   }
 
@@ -46,7 +47,7 @@ class StepMode implements DeviceMode {
     //TODO: use selected pattern
     final note = patterns.first.tracks[track].steps[step].noteAsString;
     _patternLength = patterns.first.tracks.first.steps.length;
-    print("Track:$track Step:$step Note:$note [$_patternLength]");
+    log("Track:$track Step:$step Note:$note [$_patternLength]");
     _pressedStepNote = note;
   }
 
@@ -72,8 +73,8 @@ class StepMode implements DeviceMode {
         patterns.add(SqPattern.fromSunvox(pat));
       }
     }
-    // print("read sunvox patterns:\n ${patterns.length}");
-    // print("Pattern 1:\n${patterns.first}");
+    // log("read sunvox patterns:\n ${patterns.length}");
+    // log("Pattern 1:\n${patterns.first}");
    
     return patterns;
   }
