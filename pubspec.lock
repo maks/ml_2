@@ -92,10 +92,11 @@ packages:
   dart_sunvox:
     dependency: "direct main"
     description:
-      path: "../dart_sunvox"
-      relative: true
-    source: path
-    version: "0.1.1"
+      name: dart_sunvox
+      sha256: "30820d2cfb685fb8042da4c6eb2668a22526c3e0d06c2596bb7e35ffa58b469a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
   ffi:
     dependency: transitive
     description:
