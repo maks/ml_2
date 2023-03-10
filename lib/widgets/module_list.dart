@@ -26,7 +26,7 @@ class ModuleList extends PadWidget {
     // log("pad $index -> $moduleId");
     final module = _context.sunvox.getModule(moduleId);
     _context.currentModule = module;
-    log("pad module:[${module?.id}] ${module?.name}");
+    log("pad module:[${module?.id}] ${module?.name} type:${module?.type} colour:${module?.color}");
     _context.screen.drawContent(["${module?.name}"], large: true);
 
     if (event.direction == ButtonDirection.Down) {
