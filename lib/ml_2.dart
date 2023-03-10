@@ -197,6 +197,7 @@ class ML2 {
   }
 
   void _updateUI() {
+    //TODO: move into Modes widget
     for (final b in [ButtonCode.step, ButtonCode.note, ButtonCode.drum, ButtonCode.perform]) {
       _midiDevice.send(ButtonControls.buttonOn(b, 0));
     }
@@ -216,6 +217,10 @@ class ML2 {
         break;
     }
     _transportControls.update(_midiDevice);
+
+    // always paint the "top level" non-mode widgets
+    _transportControlWidget.paint();
+
     currentMode.paint();
 
     _repaintOLED();
