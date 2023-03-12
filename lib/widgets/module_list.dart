@@ -99,7 +99,6 @@ class ModuleList extends PadWidget {
         continue;
       }
       if (onlyInstruments && !module.isInstrument) {
-        log("skip: ${module.name}");
         continue;
       }
       instrumentModulesMap[j++] = i;
