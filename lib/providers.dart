@@ -5,15 +5,17 @@ import 'package:riverpod/riverpod.dart';
 
 import 'oled/screen.dart';
 
+final projectFileNameProvider = Provider<String>((ref) => "");
+
 final sunvoxProvider = FutureProvider<LibSunvox>((ref) async {
   // Log.d("sunvoxProvider", "cwd: ${Directory.current}");
   final sunvox = LibSunvox(0, "./sunvox.so");
   final v = sunvox.versionString();
   Log.d("sunvoxProvider", 'sunvox lib version: $v');
 
-  // const filename = "song01.sunvox";
-  const filename = "endless_fantasy.sunvox";
-  // const filename = "default1.sunvox";
+  final filename = ref.read(projectFileNameProvider);
+  Log.d("sunvoxProvider", "loading project file: $filename");
+
   await sunvox.load(filename);
   // or as data using Dart's file ops
   // final data = File(filename).readAsBytesSync();
