@@ -9,9 +9,20 @@ Second generation of Akai Fire based "groovebox", now using Sunvox as the audio 
 
 ## Using
 
-Add a symlink to the required platform libsunvox, eg. `ln -s lib_x86_64/sunvox.so`
+Add a symlink to the required platform libsunvox, eg. `cp lib_x86_64/sunvox.so /usr/lib/`
+
+For better performance, especially on slower, SBC's (eg RPI) compile a native binary and use it, eg:
+```
+dart pub get
+dart compile exe bin/main.dart
+cp lib_arm64/sunvox.so /usr/lib/
+bin/main.exe  endless_fantasy.sunvox
+```
 
 ## Todo
+
+Eng:
+* [ ] Update to Riverpod 2
 
 R1: Modules & Playing
 * [X] volume dial, master volume, show on Oled
@@ -27,14 +38,17 @@ R1: Modules & Playing
 * [X] add/remove modules using Oled+select dial to choose new module to add
 * [X] connect/disconnect modules together using pads
 * [X] better module controllers change with encoders
-* [ ] convert transport controls class to be a widget
+* [X] convert transport controls class to be a widget
 * [ ] scales keyboard (C maj, dorian, etc)
 
 
 R2: Project Management
+* [X] Load initial .sunvox project file from commandline 
 * [ ] Go into project menu on Oled with Shift+Browser button
 * [ ] Create new project (using project menu item), named "Project 1"," Project 2"," Project 3" etc
 * [ ] Load project from list
+* [ ] Save project file via menu
+* [ ] Load initial .sunvox project file from presisted previous file (save on exit/shutdown) 
 * [ ] Set project BPM (using metronome button + select dial)
 
 R3: Step Sequencing

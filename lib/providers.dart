@@ -9,7 +9,7 @@ final projectFileNameProvider = Provider<String>((ref) => "");
 
 final sunvoxProvider = FutureProvider<LibSunvox>((ref) async {
   // Log.d("sunvoxProvider", "cwd: ${Directory.current}");
-  final sunvox = LibSunvox(0, "./sunvox.so");
+  final sunvox = LibSunvox(0, "/usr/lib/sunvox.so");
   final v = sunvox.versionString();
   Log.d("sunvoxProvider", 'sunvox lib version: $v');
 
