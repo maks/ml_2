@@ -7,7 +7,8 @@
     {
       "name": "ml_2",
       "request": "launch",
-      "type": "dart"
+      "type": "dart",
+      "args": ["endless_fantasy.sunvox"]
     }
   ]
 }
