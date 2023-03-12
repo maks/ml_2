@@ -7,6 +7,10 @@ Second generation of Akai Fire based "groovebox", now using Sunvox as the audio 
 
 [![Video previewing current ML-2 status](https://img.youtube.com/vi/JpadEkXXo2E/0.jpg)](https://www.youtube.com/watch?v=JpadEkXXo2E)
 
+## Using
+
+Add a symlink to the required platform libsunvox, eg. `ln -s lib_x86_64/sunvox.so`
+
 ## Todo
 
 R1: Modules & Playing
