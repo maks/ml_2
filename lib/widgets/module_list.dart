@@ -26,7 +26,7 @@ class ModuleList extends PadWidget {
     // log("pad $index -> $moduleId");
     final module = _context.sunvox.getModule(moduleId);
     _context.currentModule = module;
-    log("pad module:[${module?.id}] ${module?.name}");
+    log("pad module:[${module?.id}] ${module?.name} type:${module?.type} colour:${module?.color}");
     _context.screen.drawContent(["${module?.name}"], large: true);
 
     if (event.direction == ButtonDirection.Down) {
@@ -39,7 +39,7 @@ class ModuleList extends PadWidget {
 
         if (outModNames != null) {
           // TODO: for now only show 2 because only 2 fit in large Font mode
-          _context.screen.drawContent(["${module?.name.truncate(8)} >", ...outModNames.take(2)], large: true);
+          _context.screen.drawContent(["${module?.name?.truncate(8)} >", ...outModNames.take(2)], large: true);
         }
         return;
       }
@@ -53,10 +53,10 @@ class ModuleList extends PadWidget {
         if (activePadIndex != null && activePadIndex != eventPadIndex) {
           final activeModule = _context.sunvox.getModule(activePadIndex!);
           if (activeModule?.outputs.contains(eventPadIndex) ?? false) {
-            print("DISCONNECT: ${activeModule?.name} -> $eventPadIndex");
+            log("DISCONNECT: ${activeModule?.name} -> $eventPadIndex");
             activeModule?.disconnectFromModule(eventPadIndex);
           } else {
-            print("CONNECT: ${activeModule?.name} -> $eventPadIndex");
+            log("CONNECT: ${activeModule?.name} -> $eventPadIndex");
             activeModule?.connectToModule(eventPadIndex);
           }
         } else {

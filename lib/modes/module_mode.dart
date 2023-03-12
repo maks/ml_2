@@ -195,20 +195,20 @@ class ModuleMode implements DeviceMode {
       child.onFocus();
     }
   }
+
+  String _controllerAbrv(String name) {
+    if (controllerAbbreviations[name] != null) {
+      return controllerAbbreviations[name]!;
+    } else {
+      log("missing abrv:$name");
+      return name.truncate(3);
+    }
+  }
 }
 
 class AllModulesListProvider implements ListItemProvider {
   @override
   String? itemName(int index) => index < allModuleTypes.length ? allModuleTypes.elementAt(index) : null;
-}
-
-String _controllerAbrv(String name) {
-  if (controllerAbbreviations[name] != null) {
-    return controllerAbbreviations[name]!;
-  } else {
-    print("missing abrv:$name");
-    return name.truncate(3);
-  }
 }
 
 const controllerAbbreviations = {

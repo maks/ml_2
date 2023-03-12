@@ -1,5 +1,6 @@
-import 'dart:math';
+import 'dart:math' as math;
 
+import 'package:bonsai/bonsai.dart';
 import 'package:monochrome_draw/monochrome_draw.dart';
 import 'package:oled_font_57/oled_font_57.dart' as font57;
 
@@ -29,10 +30,10 @@ class OledScreen {
 
   void drawContent(final List<String> content, {bool large = false, Set<int> invertLines = const {}}) {
     final fontLineHieght = large == true ? lineHeight * 3 : lineHeight;
-    for (int line = 0; line < min(content.length, maxVisibleLines); line++) {
+    for (int line = 0; line < math.min(content.length, maxVisibleLines); line++) {
       String lineText = content[line];
       if (lineText.length > 10) {
-        print("too long:$lineText");
+        log("too long:$lineText");
         lineText = lineText.substring(0, 10);
       }
       _oledCanvas.setCursor(0, (fontLineHieght * line));

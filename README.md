@@ -40,6 +40,7 @@ R3: Step Sequencing
 * [ ] Quick way of switching current module (shfit+select dial??)
 * [ ] Page through step pages with using grid left-right buttons
 * [ ] Auto add step page when adding step to non existent page after doing "next page" button
+* [ ] Play button blinks to beat (yellow on the first beat)
 * [ ] Show play head during playback
 * [ ] Auto add track when adding step to track with no steps yet defined
 * [ ] Set default module (instrument) for a track
@@ -56,6 +57,7 @@ R4: Visualisation & mixing
 * [ ] Oled show waveform of any modules output
 
 R5: Misc Improvements
+* [ ] Open `.sunsynth` file into a instrument (Metamodule?) module
 * [ ] Rename current project (use pads as qwerty keybd)
 * [ ] editing of complex module controls: eg. envelopes 
 

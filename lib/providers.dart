@@ -1,5 +1,6 @@
 import 'package:bonsai/bonsai.dart';
 import 'package:dart_sunvox/dart_sunvox.dart';
+import 'package:ml_2/transport/transport_controls.dart';
 import 'package:riverpod/riverpod.dart';
 
 import 'oled/screen.dart';
@@ -25,3 +26,7 @@ final sunvoxProvider = FutureProvider<LibSunvox>((ref) async {
 });
 
 final screenProvider = Provider(((ref) => OledScreen()));
+
+final transportControlsProvider = StateNotifierProvider<TransportControl, TransportState>(
+  ((ref) => TransportControl()),
+);
